@@ -50,49 +50,6 @@ GridLayout {
             if (!initialDesktopButton) {
                 return;
             }
-
-            Utils.delay(pressToDragDuration, function() {
-                if (!pressed) {
-                    return;
-                }
-
-                var desktopButton = desktopButtonContainer.childAt(mouse.x, mouse.y);
-                if (desktopButton && desktopButton == initialDesktopButton) {
-                    isDragging = true;
-                    draggedDesktopButton = desktopButton;
-                }
-            });
-        }
-
-        onPositionChanged: {
-            if (isDragging) {
-                var desktopButton = desktopButtonContainer.childAt(mouse.x, mouse.y);
-
-                if (desktopButton) {
-                    if (desktopButton != draggedDesktopButton) {
-
-                        var maxOffset = desktopButton.width * 0.3;
-                        var centerPos = desktopButton.x + desktopButton.width / 2;
-                        if (!((mouse.x >= centerPos - maxOffset && mouse.x <= centerPos) ||
-                              (mouse.x <= centerPos + maxOffset && mouse.x >= centerPos))) {
-                            return;
-                        }
-
-                        backend.replaceDesktops(draggedDesktopButton.number, desktopButton.number);
-                        draggedDesktopButton = desktopButton;
-                    }
-                }
-            }
-        }
-
-        onReleased: {
-            if (isDragging) {
-                draggedDesktopButton = null;
-
-                Qt.callLater(function() {
-                    isDragging = false;
-                });
-            }
         }
 
         onWheel: {
