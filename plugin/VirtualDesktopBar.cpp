@@ -36,12 +36,7 @@ void VirtualDesktopBar::showDesktop(int number) {
 void VirtualDesktopBar::addDesktop(unsigned /*position*/) {
     netRootInfo.setNumberOfDesktops(KWindowSystem::numberOfDesktops() + 1);
 
-    if (!cfg_AddingDesktopsExecuteCommand.isEmpty()) {
-        QTimer::singleShot(100, [=] {
-            QString command = "(" + cfg_AddingDesktopsExecuteCommand + ") &";
-            system(command.toStdString().c_str());
-        });
-    }
+
 }
 
 void VirtualDesktopBar::removeDesktop(int number) {
@@ -158,15 +153,6 @@ void VirtualDesktopBar::setUpKWinSignals() {
 }
 
 void VirtualDesktopBar::setUpInternalSignals() {
-    QObject::connect(this, &VirtualDesktopBar::cfg_EmptyDesktopsRenameAsChanged, this, [&] {
-        tryRenameEmptyDesktops();
-    });
-
-    QObject::connect(this, &VirtualDesktopBar::cfg_DynamicDesktopsEnableChanged, this, [&] {
-        tryAddEmptyDesktop();
-        tryRemoveEmptyDesktops();
-    });
-
     QObject::connect(this, &VirtualDesktopBar::cfg_MultipleScreensFilterOccupiedDesktopsChanged, this, [&] {
         sendDesktopInfoList();
     });
@@ -182,33 +168,6 @@ void VirtualDesktopBar::setUpGlobalKeyboardShortcuts() {
         showDesktop(mostRecentDesktopNumber);
     });
     KGlobalAccel::setGlobalShortcut(actionSwitchToRecentDesktop, QKeySequence());
-
-    actionAddDesktop = actionCollection->addAction(QStringLiteral("addDesktop"));
-    actionAddDesktop->setText(prefix + "Add Desktop");
-    QObject::connect(actionAddDesktop, &QAction::triggered, this, [&] {
-        if (!cfg_DynamicDesktopsEnable) {
-            addDesktop();
-        }
-    });
-    KGlobalAccel::setGlobalShortcut(actionAddDesktop, QKeySequence());
-
-    actionRemoveLastDesktop = actionCollection->addAction(QStringLiteral("removeLastDesktop"));
-    actionRemoveLastDesktop->setText(prefix + "Remove Last Desktop");
-    QObject::connect(actionRemoveLastDesktop, &QAction::triggered, this, [&] {
-        if (!cfg_DynamicDesktopsEnable) {
-            removeDesktop(KWindowSystem::numberOfDesktops());
-        }
-    });
-    KGlobalAccel::setGlobalShortcut(actionRemoveLastDesktop, QKeySequence());
-
-    actionRemoveCurrentDesktop = actionCollection->addAction(QStringLiteral("removeCurrentDesktop"));
-    actionRemoveCurrentDesktop->setText(prefix + "Remove Current Desktop");
-    QObject::connect(actionRemoveCurrentDesktop, &QAction::triggered, this, [&] {
-        if (!cfg_DynamicDesktopsEnable) {
-            removeDesktop(KWindowSystem::currentDesktop());
-        }
-    });
-    KGlobalAccel::setGlobalShortcut(actionRemoveCurrentDesktop, QKeySequence());
 
     actionRenameCurrentDesktop = actionCollection->addAction(QStringLiteral("renameCurrentDesktop"));
     actionRenameCurrentDesktop->setText(prefix + "Rename Current Desktop");
@@ -411,31 +370,22 @@ void VirtualDesktopBar::sendDesktopInfoList() {
 }
 
 void VirtualDesktopBar::tryAddEmptyDesktop() {
-    if (cfg_DynamicDesktopsEnable) {
-        auto emptyDesktopNumberList = getEmptyDesktopNumberList(false);
-        if (emptyDesktopNumberList.empty()) {
-            addDesktop();
-        }
+    auto emptyDesktopNumberList = getEmptyDesktopNumberList(false);
+    if (emptyDesktopNumberList.empty()) {
+        addDesktop();
     }
 }
 
 void VirtualDesktopBar::tryRemoveEmptyDesktops() {
-    if (cfg_DynamicDesktopsEnable) {
-        auto emptyDesktopNumberList = getEmptyDesktopNumberList(false);
-        for (int i = 1; i < emptyDesktopNumberList.length(); i++) {
-            int desktopNumber = emptyDesktopNumberList[i];
-            removeDesktop(desktopNumber);
-        }
+    auto emptyDesktopNumberList = getEmptyDesktopNumberList(false);
+    for (int i = 1; i < emptyDesktopNumberList.length(); i++) {
+        int desktopNumber = emptyDesktopNumberList[i];
+        removeDesktop(desktopNumber);
     }
 }
 
 void VirtualDesktopBar::tryRenameEmptyDesktops() {
-    if (!cfg_EmptyDesktopsRenameAs.isEmpty()) {
-        auto emptyDesktopNumberList = getEmptyDesktopNumberList();
-        for (int desktopNumber : emptyDesktopNumberList) {
-            renameDesktop(desktopNumber, cfg_EmptyDesktopsRenameAs);
-        }
-    }
+    // TODO remove
 }
 
 void VirtualDesktopBar::updateLocalDesktopNumbers() {

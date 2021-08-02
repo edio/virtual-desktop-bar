@@ -28,17 +28,6 @@ public:
     Q_INVOKABLE void renameDesktop(int number, QString name);
     Q_INVOKABLE void replaceDesktops(int number1, int number2);
 
-    Q_PROPERTY(QString cfg_EmptyDesktopsRenameAs
-               MEMBER cfg_EmptyDesktopsRenameAs
-               NOTIFY cfg_EmptyDesktopsRenameAsChanged);
-
-    Q_PROPERTY(QString cfg_AddingDesktopsExecuteCommand
-               MEMBER cfg_AddingDesktopsExecuteCommand);
-
-    Q_PROPERTY(bool cfg_DynamicDesktopsEnable
-               MEMBER cfg_DynamicDesktopsEnable
-               NOTIFY cfg_DynamicDesktopsEnableChanged);
-
     Q_PROPERTY(bool cfg_MultipleScreensFilterOccupiedDesktops
                MEMBER cfg_MultipleScreensFilterOccupiedDesktops
                NOTIFY cfg_MultipleScreensFilterOccupiedDesktopsChanged);
@@ -47,9 +36,6 @@ signals:
     void desktopInfoListSent(QVariantList desktopInfoList);
     void requestRenameCurrentDesktop();
 
-    void cfg_EmptyDesktopsRenameAsChanged();
-    void cfg_AddingDesktopsExecuteCommandChanged();
-    void cfg_DynamicDesktopsEnableChanged();
     void cfg_MultipleScreensFilterOccupiedDesktopsChanged();
 
 private:
@@ -68,9 +54,6 @@ private:
     QList<KWindowInfo> getWindowInfoList(int desktopNumber, bool ignoreScreens = false);
     QList<int> getEmptyDesktopNumberList(bool noCheating = true);
 
-    QString cfg_EmptyDesktopsRenameAs;
-    QString cfg_AddingDesktopsExecuteCommand;
-    bool cfg_DynamicDesktopsEnable;
     bool cfg_MultipleScreensFilterOccupiedDesktops;
     bool cfg_MultipleScreensEnableSeparateDesktops;
 

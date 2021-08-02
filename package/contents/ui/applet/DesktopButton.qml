@@ -21,16 +21,7 @@ Component {
         property bool ignoreMouseArea: container.isDragging
 
         property bool isVisible: {
-            if (config.DesktopButtonsShowOnlyForCurrentDesktop &&
-                config.DesktopButtonsShowOnlyForOccupiedDesktops) {
-                return isCurrent || !isEmpty;
-            }
-            if (config.DesktopButtonsShowOnlyForCurrentDesktop) {
-                return isCurrent;
-            }
-            if (config.DesktopButtonsShowOnlyForOccupiedDesktops) {
-                return !isEmpty;
-            }
+            // TODO handle multimonitor here
             return true;
         }
 
@@ -53,7 +44,7 @@ Component {
 
         clip: true
         color: "transparent"
-        opacity: !config.AnimationsEnable ? 1 : 0
+        opacity: 1
 
         readonly property int tooltipWaitDuration: 800
         readonly property int animationWidthDuration: 100
@@ -98,9 +89,6 @@ Component {
                 if (isCurrent) {
                     return config.DesktopIndicatorsCustomColorForCurrentDesktop || theme.buttonFocusColor;
                 }
-                if (isEmpty && config.DesktopIndicatorsCustomColorForIdleDesktops) {
-                    return config.DesktopIndicatorsCustomColorForIdleDesktops;
-                }
                 if (!isEmpty && config.DesktopIndicatorsCustomColorForOccupiedIdleDesktops) {
                     return config.DesktopIndicatorsCustomColorForOccupiedIdleDesktops;
                 }
@@ -126,14 +114,10 @@ Component {
                 }
                 if (config.DesktopIndicatorsDoNotOverrideOpacityOfCustomColors) {
                     if ((isCurrent && config.DesktopIndicatorsCustomColorForCurrentDesktop) ||
-                        (isEmpty && config.DesktopIndicatorsCustomColorForIdleDesktops) ||
                         (!isEmpty && config.DesktopIndicatorsCustomColorForOccupiedIdleDesktops) ||
                         (isUrgent && config.DesktopIndicatorsCustomColorForDesktopsNeedingAttention)) {
                         return 1.0;
                     }
-                }
-                if (!isEmpty && config.DesktopIndicatorsDistinctForOccupiedIdleDesktops) {
-                    return config.DesktopIndicatorsStyle == 5 ? 1.0 : 0.5;
                 }
                 return config.DesktopIndicatorsStyle == 5 ? 0.5 : 0.25;
             }
@@ -309,10 +293,7 @@ Component {
                 if (mouse.button == Qt.LeftButton) {
                     backend.showDesktop(number);
                 } else if (mouse.button == Qt.MiddleButton) {
-                    if (!config.DynamicDesktopsEnable &&
-                        config.MouseWheelRemoveDesktopOnClick) {
-                        backend.removeDesktop(number);
-                    }
+                    // TODO remove
                 }
             }
         }
@@ -320,30 +301,6 @@ Component {
         function updateLabel() {
             label.text = Qt.binding(function() {
                 var labelText = name;
-
-                if (config.DesktopLabelsStyle == 1) {
-                    labelText = number + "";
-                } else if (config.DesktopLabelsStyle == 2) {
-                    labelText = number + ": " + name;
-                } else if (config.DesktopLabelsStyle == 3) {
-                    labelText = activeWindowName || name;
-                } else if (config.DesktopLabelsStyle == 4) {
-                    if (config.DesktopLabelsStyleCustomFormat) {
-                        var format = config.DesktopLabelsStyleCustomFormat.trim();
-                        if (format.length > 0) {
-                            labelText = format;
-                            labelText = labelText.replace("$WX", !isEmpty ? activeWindowName : number);
-                            labelText = labelText.replace("$WR", !isEmpty ? activeWindowName : Utils.arabicToRoman(number));
-                            labelText = labelText.replace("$WN", !isEmpty ? activeWindowName : name);
-                            labelText = labelText.replace("$X", number);
-                            labelText = labelText.replace("$R", Utils.arabicToRoman(number));
-                            labelText = labelText.replace("$N", name);
-                            labelText = labelText.replace("$W", activeWindowName);
-                        } else {
-                            labelText = number + ": " + name;
-                        }
-                    }
-                }
 
                 if (labelText.length > config.DesktopLabelsMaximumLength) {
                     labelText = labelText.substr(0, config.DesktopLabelsMaximumLength - 1) + "…";

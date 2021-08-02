@@ -28,8 +28,6 @@ GridLayout {
         flow: parent.flow
     }
 
-    AddDesktopButton {}
-
     readonly property int pressToDragDuration: 300
 
     property bool isDragging: false
@@ -149,7 +147,6 @@ GridLayout {
             addDesktopButtons(difference);
         } else if (difference < 0) {
             removeDesktopButtons(desktopInfoList);
-            synchronousUpdate = !config.AnimationsEnable;
         }
 
         if (synchronousUpdate) {
@@ -168,19 +165,7 @@ GridLayout {
             desktopButtonList.push(desktopButton);
         }
 
-        if (!init && difference != 0 &&
-            !config.DynamicDesktopsEnable) {
-            if (config.AddingDesktopsSwitchTo) {
-                Utils.delay(100, function() {
-                    backend.showDesktop(desktopButtonList.length);
-                });
-            }
-            if (config.AddingDesktopsPromptToRename) {
-                Utils.delay(100, function() {
-                    renamePopup.show(desktopButtonList[desktopButtonList.length - 1]);
-                });
-            }
-        }
+
     }
 
     function removeDesktopButtons(desktopInfoList) {
@@ -201,17 +186,6 @@ GridLayout {
 
             if (largestDesktopButton == desktopButton) {
                 largestDesktopButton = null;
-            }
-
-            if (config.AnimationsEnable) {
-                desktopButton.hide(function() {
-                    desktopButton.destroy();
-
-                    if (list.length == 0) {
-                        updateDesktopButtons(desktopInfoList);
-                    }
-                }, true);
-                continue;
             }
 
             desktopButton.destroy();

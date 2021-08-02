@@ -9,8 +9,6 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 import "../common" as UICommon
 
 Item {
-    // Behavior - Dynamic desktops
-    property bool cfg_DynamicDesktopsEnable
 
     // Animations
     property alias cfg_AnimationsEnable: animationsEnableCheckBox.checked
@@ -18,20 +16,13 @@ Item {
     // Tooltips
     property alias cfg_TooltipsEnable: tooltipsEnableCheckBox.checked
 
-    // Add desktop button
-    property alias cfg_AddDesktopButtonShow: addDesktopButtonShowCheckBox.checked
-
     // Desktop buttons
     property alias cfg_DesktopButtonsVerticalMargin: desktopButtonsVerticalMarginSpinBox.value
     property alias cfg_DesktopButtonsHorizontalMargin: desktopButtonsHorizontalMarginSpinBox.value
     property alias cfg_DesktopButtonsSpacing: desktopButtonsSpacingSpinBox.value
     property alias cfg_DesktopButtonsSetCommonSizeForAll: desktopButtonsSetCommonSizeForAllCheckBox.checked
-    property alias cfg_DesktopButtonsShowOnlyForCurrentDesktop: desktopButtonsShowOnlyForCurrentDesktopCheckBox.checked
-    property alias cfg_DesktopButtonsShowOnlyForOccupiedDesktops: desktopButtonsShowOnlyForOccupiedDesktopsCheckBox.checked
 
     // Desktop labels
-    property alias cfg_DesktopLabelsStyle: desktopLabelsStyleComboBox.currentIndex
-    property string cfg_DesktopLabelsStyleCustomFormat
     property string cfg_DesktopLabelsCustomFont
     property int cfg_DesktopLabelsCustomFontSize
     property string cfg_DesktopLabelsCustomColor
@@ -45,13 +36,10 @@ Item {
     property alias cfg_DesktopIndicatorsStyleBlockRadius: desktopIndicatorsStyleBlockRadiusSpinBox.value
     property alias cfg_DesktopIndicatorsStyleLineThickness: desktopIndicatorsStyleLineThicknessSpinBox.value
     property alias cfg_DesktopIndicatorsInvertPosition: desktopIndicatorsInvertPositionCheckBox.checked
-    property string cfg_DesktopIndicatorsCustomColorForIdleDesktops
     property string cfg_DesktopIndicatorsCustomColorForCurrentDesktop
     property string cfg_DesktopIndicatorsCustomColorForOccupiedIdleDesktops
     property string cfg_DesktopIndicatorsCustomColorForDesktopsNeedingAttention
     property alias cfg_DesktopIndicatorsDoNotOverrideOpacityOfCustomColors: desktopIndicatorsDoNotOverrideOpacityOfCustomColorsCheckBox.checked
-    property alias cfg_DesktopIndicatorsDistinctForOccupiedIdleDesktops: desktopIndicatorsDistinctForOccupiedIdleDesktopsCheckBox.checked
-    property alias cfg_DesktopIndicatorsDistinctForDesktopsNeedingAttention: desktopIndicatorsDistinctForDesktopsNeedingAttentionCheckBox.checked
 
     GridLayout {
         columns: 1
@@ -74,27 +62,10 @@ Item {
             text: "Enable hover tooltips"
         }
 
-        SectionHeader {
-            text: "Add desktop button"
-        }
 
-        RowLayout {
-            spacing: 0
-
-            CheckBox {
-                id: addDesktopButtonShowCheckBox
-                enabled: !cfg_DynamicDesktopsEnable
-                text: "Show button for adding desktops"
-            }
-
-            HintIcon {
-                visible: !addDesktopButtonShowCheckBox.enabled
-                tooltipText: "Not available if dynamic desktops are enabled"
-            }
-        }
 
         SectionHeader {
-            text: "Desktop buttons"
+            text: "Workspace buttons"
         }
 
         RowLayout {
@@ -155,8 +126,6 @@ Item {
 
             SpinBox {
                 id: desktopButtonsSpacingSpinBox
-                enabled: !cfg_DesktopButtonsShowOnlyForCurrentDesktop ||
-                         cfg_DesktopButtonsShowOnlyForOccupiedDesktops
                 value: cfg_DesktopButtonsSpacing
                 minimumValue: 0
                 maximumValue: 100
@@ -182,75 +151,8 @@ Item {
             }
         }
 
-        CheckBox {
-            id: desktopButtonsShowOnlyForCurrentDesktopCheckBox
-            text: "Show button only for current desktop"
-        }
-
-        CheckBox {
-            id: desktopButtonsShowOnlyForOccupiedDesktopsCheckBox
-            text: "Show button only for occupied desktops"
-        }
-
         SectionHeader {
-            text: "Desktop labels"
-        }
-
-        RowLayout {
-            Label {
-                text: "Style:"
-            }
-
-            ComboBox {
-                id: desktopLabelsStyleComboBox
-                implicitWidth: 150
-                model: [
-                    "Name",
-                    "Number",
-                    "Number: name",
-                    "Active window's name",
-                    "Custom format"
-                ]
-                onCurrentIndexChanged: {
-                    if (cfg_DesktopLabelsStyle == 4) {
-                        cfg_DesktopLabelsStyleCustomFormat = desktopLabelsStyleTextField.text;
-                    } else {
-                        cfg_DesktopLabelsStyleCustomFormat = "";
-                    }
-                }
-
-                Component.onCompleted: {
-                    if (cfg_DesktopLabelsStyle != 4 &&
-                        cfg_DesktopLabelsStyleCustomFormat) {
-                        cfg_DesktopLabelsStyleCustomFormat = "";
-                    }
-                }
-            }
-
-            UICommon.GrowingTextField {
-                id: desktopLabelsStyleTextField
-                visible: cfg_DesktopLabelsStyle == 4
-                maximumLength: 50
-                text: cfg_DesktopLabelsStyleCustomFormat || "$X: $N"
-                onTextChanged: {
-                    if (cfg_DesktopLabelsStyle == 4 && text) {
-                        cfg_DesktopLabelsStyleCustomFormat = text;
-                    }
-                }
-                onEditingFinished: cfg_DesktopLabelsStyleCustomFormat = text
-            }
-
-            HintIcon {
-                visible: desktopLabelsStyleTextField.visible
-                tooltipText: "Available variables:<br><br>
-                              <tt>$X</tt> = desktop's number<br>
-                              <tt>$R</tt> = desktop's number (Roman)<br>
-                              <tt>$N</tt> = desktop's name<br>
-                              <tt>$W</tt> = active window's name<br>
-                              <tt>$WX</tt> = <tt>$W</tt>, or <tt>$X</tt> if there are no windows<br>
-                              <tt>$WR</tt> = <tt>$W</tt>, or <tt>$R</tt> if there are no windows<br>
-                              <tt>$WN</tt> = <tt>$W</tt>, or <tt>$N</tt> if there are no windows"
-            }
+            text: "Workspace labels"
         }
 
         RowLayout {
@@ -261,16 +163,14 @@ Item {
 
             SpinBox {
                 id: desktopLabelsMaximumLengthSpinBox
-                enabled: cfg_DesktopLabelsStyle != 1
+                enabled: true
                 minimumValue: 3
                 maximumValue: 100
                 suffix: " chars"
             }
 
             HintIcon {
-                tooltipText: cfg_DesktopLabelsStyle == 1 ?
-                             "Not available for the selected label style" :
-                             "Labels longer than the specified value will be ellipsized"
+                tooltipText: "Labels longer than the specified value will be ellipsized"
             }
         }
 
@@ -408,7 +308,7 @@ Item {
 
             CheckBox {
                 id: desktopLabelsDisplayAsUppercasedCheckBox
-                enabled: cfg_DesktopLabelsStyle != 1
+                enabled: true
                 text: "Display labels as UPPERCASED"
             }
 
@@ -424,7 +324,7 @@ Item {
         }
 
         SectionHeader {
-            text: "Desktop indicators"
+            text: "Workspace indicators"
         }
 
         RowLayout {
@@ -441,7 +341,7 @@ Item {
                     "Block",
                     "Rounded",
                     "Full size",
-                    "Use labels"
+                    "Just labels"
                 ]
 
                 onCurrentIndexChanged: {
@@ -503,33 +403,11 @@ Item {
             spacing: 0
 
             CheckBox {
-                id: desktopIndicatorsCustomColorForIdleDesktopsCheckBox
-                checked: cfg_DesktopIndicatorsCustomColorForIdleDesktops
-                onCheckedChanged: cfg_DesktopIndicatorsCustomColorForIdleDesktops = checked ?
-                                  desktopIndicatorsCustomColorForIdleDesktopsButton.color : ""
-                text: "Custom color for idle desktops:"
-            }
-
-            ColorButton {
-                id: desktopIndicatorsCustomColorForIdleDesktopsButton
-                enabled: desktopIndicatorsCustomColorForIdleDesktopsCheckBox.checked
-                color: cfg_DesktopIndicatorsCustomColorForIdleDesktops || theme.textColor
-
-                colorAcceptedCallback: function(color) {
-                    cfg_DesktopIndicatorsCustomColorForIdleDesktops = color;
-                }
-            }
-        }
-
-        RowLayout {
-            spacing: 0
-
-            CheckBox {
                 id: desktopIndicatorsCustomColorForCurrentDesktopCheckBox
                 checked: cfg_DesktopIndicatorsCustomColorForCurrentDesktop
                 onCheckedChanged: cfg_DesktopIndicatorsCustomColorForCurrentDesktop = checked ?
                                   desktopIndicatorsCustomColorForCurrentDesktopButton.color : ""
-                text: "Custom color for current desktop:"
+                text: "Custom color for focused workspaces:"
             }
 
             ColorButton {
@@ -551,7 +429,7 @@ Item {
                 checked: cfg_DesktopIndicatorsCustomColorForOccupiedIdleDesktops
                 onCheckedChanged: cfg_DesktopIndicatorsCustomColorForOccupiedIdleDesktops = checked ?
                                   desktopIndicatorsCustomColorForOccupiedIdleDesktopsButton.color : ""
-                text: "Custom color for occupied idle desktops:"
+                text: "Custom color for unfocused workspaces:"
             }
 
             ColorButton {
@@ -573,7 +451,7 @@ Item {
                 checked: cfg_DesktopIndicatorsCustomColorForDesktopsNeedingAttention
                 onCheckedChanged: cfg_DesktopIndicatorsCustomColorForDesktopsNeedingAttention = checked ?
                                   desktopIndicatorsCustomColorForDesktopsNeedingAttentionButton.color : ""
-                text: "Custom color for desktops needing attention:"
+                text: "Custom color for urgent workspaces:"
             }
 
             ColorButton {
@@ -593,7 +471,6 @@ Item {
             CheckBox {
                 id: desktopIndicatorsDoNotOverrideOpacityOfCustomColorsCheckBox
                 enabled: desktopIndicatorsCustomColorForCurrentDesktopCheckBox.checked ||
-                         desktopIndicatorsCustomColorForIdleDesktopsCheckBox.checked ||
                          desktopIndicatorsCustomColorForOccupiedIdleDesktopsCheckBox.checked ||
                          desktopIndicatorsCustomColorForDesktopsNeedingAttentionCheckBox.checked
                 text: "Do not override opacity of custom colors"
@@ -603,38 +480,6 @@ Item {
                 tooltipText: !desktopIndicatorsDoNotOverrideOpacityOfCustomColorsCheckBox.enabled ?
                              "Not available if custom colors are not used" :
                              "Alpha channel of custom colors will be applied without any modifications"
-            }
-        }
-
-        RowLayout {
-            spacing: 0
-
-            CheckBox {
-                id: desktopIndicatorsDistinctForOccupiedIdleDesktopsCheckBox
-                enabled: !cfg_DesktopIndicatorsCustomColorForOccupiedIdleDesktops ||
-                         !cfg_DesktopIndicatorsDoNotOverrideOpacityOfCustomColors
-                text: "Distinct indicators for occupied idle desktops"
-            }
-
-            HintIcon {
-                visible: !desktopIndicatorsDistinctForOccupiedIdleDesktopsCheckBox.enabled
-                tooltipText: "Not available if a custom color is used and overriding opacity of custom colors is blocked"
-            }
-        }
-
-        RowLayout {
-            spacing: 0
-
-            CheckBox {
-                id: desktopIndicatorsDistinctForDesktopsNeedingAttentionCheckBox
-                enabled: !cfg_DesktopIndicatorsCustomColorForDesktopsNeedingAttention ||
-                         !cfg_DesktopIndicatorsDoNotOverrideOpacityOfCustomColors
-                text: "Distinct indicators for desktops needing attention"
-            }
-
-            HintIcon {
-                visible: !desktopIndicatorsDistinctForDesktopsNeedingAttentionCheckBox.enabled
-                tooltipText: "Not available if a custom color is used and overriding opacity of custom colors is blocked"
             }
         }
     }

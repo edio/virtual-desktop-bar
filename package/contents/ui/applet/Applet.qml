@@ -24,9 +24,6 @@ Item {
     VirtualDesktopBar {
         id: backend
 
-        cfg_EmptyDesktopsRenameAs: config.EmptyDesktopsRenameAs
-        cfg_AddingDesktopsExecuteCommand: config.AddingDesktopsExecuteCommand
-        cfg_DynamicDesktopsEnable: config.DynamicDesktopsEnable
         cfg_MultipleScreensFilterOccupiedDesktops: config.MultipleScreensFilterOccupiedDesktops
     }
 
@@ -56,13 +53,9 @@ Item {
                    container.lastHoveredButton.objectType == "DesktopButton";
         });
 
-        var renameDesktopEnabled = Qt.binding(function() {
-            return config.DesktopLabelsStyle != 1;
-        });
+        var renameDesktopEnabled = false;
 
-        var addRemoveDesktopEnabled = Qt.binding(function() {
-            return !config.DynamicDesktopsEnable;
-        });
+        var addRemoveDesktopEnabled = false;
 
         plasmoid.action("renameDesktop").visible = renameRemoveDesktopVisible;
         plasmoid.action("renameDesktop").enabled = renameDesktopEnabled;
