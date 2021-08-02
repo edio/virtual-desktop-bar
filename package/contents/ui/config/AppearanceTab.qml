@@ -10,19 +10,13 @@ import "../common" as UICommon
 
 Item {
 
-    // Animations
-    property alias cfg_AnimationsEnable: animationsEnableCheckBox.checked
-
-    // Tooltips
-    property alias cfg_TooltipsEnable: tooltipsEnableCheckBox.checked
-
-    // Desktop buttons
+    // Buttons
     property alias cfg_DesktopButtonsVerticalMargin: desktopButtonsVerticalMarginSpinBox.value
     property alias cfg_DesktopButtonsHorizontalMargin: desktopButtonsHorizontalMarginSpinBox.value
     property alias cfg_DesktopButtonsSpacing: desktopButtonsSpacingSpinBox.value
     property alias cfg_DesktopButtonsSetCommonSizeForAll: desktopButtonsSetCommonSizeForAllCheckBox.checked
 
-    // Desktop labels
+    // Labels
     property string cfg_DesktopLabelsCustomFont
     property int cfg_DesktopLabelsCustomFontSize
     property string cfg_DesktopLabelsCustomColor
@@ -31,7 +25,7 @@ Item {
     property alias cfg_DesktopLabelsMaximumLength: desktopLabelsMaximumLengthSpinBox.value
     property alias cfg_DesktopLabelsDisplayAsUppercased: desktopLabelsDisplayAsUppercasedCheckBox.checked
 
-    // Desktop indicators
+    // Indicators
     property alias cfg_DesktopIndicatorsStyle: desktopIndicatorsStyleComboBox.currentIndex
     property alias cfg_DesktopIndicatorsStyleBlockRadius: desktopIndicatorsStyleBlockRadiusSpinBox.value
     property alias cfg_DesktopIndicatorsStyleLineThickness: desktopIndicatorsStyleLineThicknessSpinBox.value
@@ -41,31 +35,15 @@ Item {
     property string cfg_DesktopIndicatorsCustomColorForDesktopsNeedingAttention
     property alias cfg_DesktopIndicatorsDoNotOverrideOpacityOfCustomColors: desktopIndicatorsDoNotOverrideOpacityOfCustomColorsCheckBox.checked
 
+    // Other
+    property alias cfg_AnimationsEnable: animationsEnableCheckBox.checked
+    property alias cfg_TooltipsEnable: tooltipsEnableCheckBox.checked
+
     GridLayout {
         columns: 1
 
         SectionHeader {
-            text: "Animations"
-        }
-
-        CheckBox {
-            id: animationsEnableCheckBox
-            text: "Enable animations"
-        }
-
-        SectionHeader {
-            text: "Tooltips"
-        }
-
-        CheckBox {
-            id: tooltipsEnableCheckBox
-            text: "Enable hover tooltips"
-        }
-
-
-
-        SectionHeader {
-            text: "Workspace buttons"
+            text: "Buttons"
         }
 
         RowLayout {
@@ -152,7 +130,7 @@ Item {
         }
 
         SectionHeader {
-            text: "Workspace labels"
+            text: "Labels"
         }
 
         RowLayout {
@@ -324,7 +302,7 @@ Item {
         }
 
         SectionHeader {
-            text: "Workspace indicators"
+            text: "Indicators"
         }
 
         RowLayout {
@@ -482,5 +460,20 @@ Item {
                              "Alpha channel of custom colors will be applied without any modifications"
             }
         }
+
+        SectionHeader {
+            text: "Other"
+        }
+
+        CheckBox {
+            id: animationsEnableCheckBox
+            text: "Enable animations"
+        }
+
+        CheckBox {
+            id: tooltipsEnableCheckBox
+            text: "Enable hover tooltips"
+        }
+
     }
 }

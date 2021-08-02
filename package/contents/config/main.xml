@@ -28,17 +28,7 @@
 
     <!-- Appearance -->
 
-    <!-- Appearance - Animations -->
-    <entry name="AnimationsEnable" type="Bool">
-      <default>false</default>
-    </entry>
-
-    <!-- Appearance - Tooltips -->
-    <entry name="TooltipsEnable" type="Bool">
-      <default>false</default>
-    </entry>
-
-    <!-- Appearance - Desktop buttons -->
+    <!-- Appearance - Buttons -->
     <entry name="DesktopButtonsVerticalMargin" type="Int">
       <default>3</default>
     </entry>
@@ -52,7 +42,7 @@
       <default>false</default>
     </entry>
 
-    <!-- Appearance - Desktop labels -->
+    <!-- Appearance - Labels -->
     <entry name="DesktopLabelsMaximumLength" type="Int">
       <default>25</default>
     </entry>
@@ -75,7 +65,7 @@
       <default>false</default>
     </entry>
 
-    <!-- Appearance - Desktop indicators -->
+    <!-- Appearance - Indicators -->
     <entry name="DesktopIndicatorsStyle" type="Int">
       <default>0</default>
     </entry>
@@ -98,6 +88,14 @@
       <default></default>
     </entry>
     <entry name="DesktopIndicatorsDoNotOverrideOpacityOfCustomColors" type="Bool">
+      <default>false</default>
+    </entry>
+
+    <!-- Appearance - Other -->
+    <entry name="AnimationsEnable" type="Bool">
+      <default>false</default>
+    </entry>
+    <entry name="TooltipsEnable" type="Bool">
       <default>false</default>
     </entry>
 
