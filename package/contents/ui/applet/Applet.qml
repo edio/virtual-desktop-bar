@@ -9,7 +9,6 @@ import org.kde.plasma.virtualdesktopbar 1.2
 Item {
     id: root
 
-    DesktopRenamePopup { id: renamePopup }
     DesktopButtonTooltip { id: tooltip }
 
     Plasmoid.fullRepresentation: Container {}
@@ -23,51 +22,18 @@ Item {
 
     VirtualDesktopBar {
         id: backend
-
         cfg_MultipleScreensFilterOccupiedDesktops: config.MultipleScreensFilterOccupiedDesktops
     }
 
     Connections {
         target: backend
         onDesktopInfoListSent: container.update(desktopInfoList)
-        onRequestRenameCurrentDesktop: renamePopup.show(container.currentDesktopButton)
     }
 
     Component.onCompleted: {
         Qt.callLater(function() {
-            initializeContextMenuActions();
             backend.requestDesktopInfoList();
         });
-    }
-
-    function initializeContextMenuActions() {
-        plasmoid.setAction("renameDesktop", "Rename Desktop", "edit-rename");
-        plasmoid.setAction("removeDesktop", "Remove Desktop", "list-remove");
-        plasmoid.setActionSeparator("separator1");
-        plasmoid.setAction("addDesktop", "Add Desktop", "list-add");
-        plasmoid.setAction("removeLastDesktop", "Remove Last Desktop", "list-remove");
-        plasmoid.setActionSeparator("separator2");
-
-        var renameRemoveDesktopVisible = Qt.binding(function() {
-            return container.lastHoveredButton &&
-                   container.lastHoveredButton.objectType == "DesktopButton";
-        });
-
-        var renameDesktopEnabled = false;
-
-        var addRemoveDesktopEnabled = false;
-
-        plasmoid.action("renameDesktop").visible = renameRemoveDesktopVisible;
-        plasmoid.action("renameDesktop").enabled = renameDesktopEnabled;
-        plasmoid.action("removeDesktop").visible = renameRemoveDesktopVisible;
-        plasmoid.action("removeDesktop").enabled = addRemoveDesktopEnabled;
-        plasmoid.action("separator1").visible = renameRemoveDesktopVisible;
-        plasmoid.action("addDesktop").enabled = addRemoveDesktopEnabled;
-        plasmoid.action("removeLastDesktop").enabled = addRemoveDesktopEnabled;
-    }
-
-    function action_renameDesktop() {
-        renamePopup.show(container.lastHoveredButton);
     }
 
     function action_removeDesktop() {
