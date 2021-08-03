@@ -33,16 +33,4 @@ Item {
             backend.requestDesktopInfoList();
         });
     }
-
-    function action_removeDesktop() {
-        backend.removeDesktop(container.lastHoveredButton.number);
-    }
-
-    function action_addDesktop() {
-        backend.addDesktop();
-    }
-
-    function action_removeLastDesktop() {
-        backend.removeDesktop(container.lastDesktopButton.number);
-    }
 }

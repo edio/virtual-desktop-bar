@@ -23,7 +23,6 @@ public:
     Q_INVOKABLE void requestDesktopInfoList();
 
     Q_INVOKABLE void showDesktop(int number);
-    Q_INVOKABLE void addDesktop(unsigned position = 0);
     Q_INVOKABLE void removeDesktop(int number);
     Q_INVOKABLE void renameDesktop(int number, QString name);
     Q_INVOKABLE void replaceDesktops(int number1, int number2);

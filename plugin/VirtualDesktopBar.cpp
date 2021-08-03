@@ -364,18 +364,11 @@ void VirtualDesktopBar::sendDesktopInfoList() {
 }
 
 void VirtualDesktopBar::tryAddEmptyDesktop() {
-    auto emptyDesktopNumberList = getEmptyDesktopNumberList(false);
-    if (emptyDesktopNumberList.empty()) {
-        addDesktop();
-    }
+    // TODO remove
 }
 
 void VirtualDesktopBar::tryRemoveEmptyDesktops() {
-    auto emptyDesktopNumberList = getEmptyDesktopNumberList(false);
-    for (int i = 1; i < emptyDesktopNumberList.length(); i++) {
-        int desktopNumber = emptyDesktopNumberList[i];
-        removeDesktop(desktopNumber);
-    }
+    // TODO remove
 }
 
 void VirtualDesktopBar::tryRenameEmptyDesktops() {
