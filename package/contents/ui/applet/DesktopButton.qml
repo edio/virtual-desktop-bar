@@ -292,8 +292,6 @@ Component {
 
                 if (mouse.button == Qt.LeftButton) {
                     backend.showDesktop(number);
-                } else if (mouse.button == Qt.MiddleButton) {
-                    // TODO remove
                 }
             }
         }

@@ -33,12 +33,6 @@ void VirtualDesktopBar::showDesktop(int number) {
     KWindowSystem::setCurrentDesktop(number);
 }
 
-void VirtualDesktopBar::addDesktop(unsigned /*position*/) {
-    netRootInfo.setNumberOfDesktops(KWindowSystem::numberOfDesktops() + 1);
-
-
-}
-
 void VirtualDesktopBar::removeDesktop(int number) {
     auto reply = dbusInterface.call("removeDesktop", getDesktopInfo(number).id);
 
