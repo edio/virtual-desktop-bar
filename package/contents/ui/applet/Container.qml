@@ -87,10 +87,6 @@ GridLayout {
             }
 
             if (desktopNumber > 0) {
-                if (config.TooltipsEnable) {
-                    tooltip.visible = false;
-                }
-
                 backend.showDesktop(desktopNumber);
             }
         }

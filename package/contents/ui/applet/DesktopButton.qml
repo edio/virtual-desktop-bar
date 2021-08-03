@@ -265,31 +265,9 @@ Component {
 
             onEntered: {
                 container.lastHoveredButton = parent;
-
-                if (!config.TooltipsEnable) {
-                    return;
-                }
-
-                tooltipTimer = Utils.delay(tooltipWaitDuration, function() {
-                    if (containsMouse && !isDragged) {
-                        tooltip.show(parent);
-                    }
-                });
-            }
-
-            onExited: {
-                if (config.TooltipsEnable) {
-                    killTooltipTimer();
-                    tooltip.visible = false;
-                }
             }
 
             onClicked: {
-                if (config.TooltipsEnable) {
-                    killTooltipTimer();
-                    tooltip.visible = false;
-                }
-
                 if (mouse.button == Qt.LeftButton) {
                     backend.showDesktop(number);
                 }

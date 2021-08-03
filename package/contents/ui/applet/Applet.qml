@@ -9,8 +9,6 @@ import org.kde.plasma.virtualdesktopbar 1.2
 Item {
     id: root
 
-    DesktopButtonTooltip { id: tooltip }
-
     Plasmoid.fullRepresentation: Container {}
     Plasmoid.preferredRepresentation: Plasmoid.fullRepresentation
 

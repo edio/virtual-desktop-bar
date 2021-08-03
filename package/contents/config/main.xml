@@ -95,9 +95,6 @@
     <entry name="AnimationsEnable" type="Bool">
       <default>false</default>
     </entry>
-    <entry name="TooltipsEnable" type="Bool">
-      <default>false</default>
-    </entry>
 
   </group>
 </kcfg>

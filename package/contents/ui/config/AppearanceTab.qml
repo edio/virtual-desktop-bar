@@ -37,7 +37,6 @@ Item {
 
     // Other
     property alias cfg_AnimationsEnable: animationsEnableCheckBox.checked
-    property alias cfg_TooltipsEnable: tooltipsEnableCheckBox.checked
 
     GridLayout {
         columns: 1
@@ -468,11 +467,6 @@ Item {
         CheckBox {
             id: animationsEnableCheckBox
             text: "Enable animations"
-        }
-
-        CheckBox {
-            id: tooltipsEnableCheckBox
-            text: "Enable hover tooltips"
         }
 
     }
