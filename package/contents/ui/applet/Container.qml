@@ -28,10 +28,12 @@ GridLayout {
         flow: parent.flow
     }
 
-    readonly property int pressToDragDuration: 300
-
-    property bool isDragging: false
-    property Item draggedDesktopButton
+    Text {
+        text: screen
+        color: config.DesktopIndicatorsStyle == 5 ?
+               indicator.color :
+               config.DesktopLabelsCustomColor || theme.textColor
+    }
 
     MouseArea {
         anchors.fill: parent
@@ -40,10 +42,6 @@ GridLayout {
         readonly property int wheelDeltaLimit: 120
 
         property int currentWheelDelta: 0
-
-        onClicked: {
-            mouse.accepted = isDragging;
-        }
 
         onPressed: {
             var initialDesktopButton = desktopButtonContainer.childAt(mouse.x, mouse.y);

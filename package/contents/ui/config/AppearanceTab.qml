@@ -22,7 +22,6 @@ Item {
     property string cfg_DesktopLabelsCustomColor
     property alias cfg_DesktopLabelsDimForIdleDesktops: desktopLabelsDimForIdleDesktopsCheckBox.checked
     property alias cfg_DesktopLabelsBoldFontForCurrentDesktop: desktopLabelsBoldFontForCurrentDesktopCheckBox.checked
-    property alias cfg_DesktopLabelsMaximumLength: desktopLabelsMaximumLengthSpinBox.value
     property alias cfg_DesktopLabelsDisplayAsUppercased: desktopLabelsDisplayAsUppercasedCheckBox.checked
 
     // Indicators
@@ -130,25 +129,6 @@ Item {
 
         SectionHeader {
             text: "Labels"
-        }
-
-        RowLayout {
-            Label {
-                enabled: desktopLabelsMaximumLengthSpinBox.enabled
-                text: "Maximum length:"
-            }
-
-            SpinBox {
-                id: desktopLabelsMaximumLengthSpinBox
-                enabled: true
-                minimumValue: 3
-                maximumValue: 100
-                suffix: " chars"
-            }
-
-            HintIcon {
-                tooltipText: "Labels longer than the specified value will be ellipsized"
-            }
         }
 
         RowLayout {

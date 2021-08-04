@@ -1,4 +1,10 @@
-import QtQuick 2.7
+import QtQuick 2.13
+import QtQuick.Window 2.13
+
+import QtQuick.Layouts 1.3
+import QtQuick.Controls 1.3
+import QtQuick.Dialogs 1.3
+import QtQuick.Controls.Styles 1.3
 
 import org.kde.kquickcontrolsaddons 2.0
 import org.kde.plasma.core 2.0 as PlasmaCore
@@ -17,6 +23,9 @@ Item {
 
     property bool isTopLocation: plasmoid.location == PlasmaCore.Types.TopEdge
     property bool isVerticalOrientation: plasmoid.formFactor == PlasmaCore.Types.Vertical
+    property string version: plasmoid.metaData.version
+    property int screenWidth: plasmoid.screenGeometry.width
+    property string screen: Screen.name
 
     VirtualDesktopBar {
         id: backend
@@ -32,5 +41,9 @@ Item {
         Qt.callLater(function() {
             backend.requestDesktopInfoList();
         });
+    }
+
+    Screen.onNameChanged: {
+        screen = Screen.name
     }
 }

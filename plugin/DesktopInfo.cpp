@@ -8,8 +8,6 @@ QVariantMap DesktopInfo::toQVariantMap() {
     map.insert("isCurrent", isCurrent);
     map.insert("isEmpty", isEmpty);
     map.insert("isUrgent", isUrgent);
-    map.insert("activeWindowName", activeWindowName);
-    map.insert("windowNameList", QVariant(windowNameList));
     return map;
 }
 

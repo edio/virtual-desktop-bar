@@ -6,23 +6,16 @@
 #include <QRegularExpression>
 #include <QScreen>
 #include <QTimer>
-#include <QX11Info>
 
 #include <KGlobalAccel>
 
 VirtualDesktopBar::VirtualDesktopBar(QObject* parent) : QObject(parent),
-        netRootInfo(QX11Info::connection(), 0),
         dbusInterface("org.kde.KWin", "/VirtualDesktopManager"),
         dbusInterfaceName("org.kde.KWin.VirtualDesktopManager"),
         sendDesktopInfoListLock(false),
-        tryAddEmptyDesktopLock(false),
-        tryRemoveEmptyDesktopsLock(false),
-        tryRenameEmptyDesktopsLock(false),
-        currentDesktopNumber(KWindowSystem::currentDesktop()),
-        mostRecentDesktopNumber(currentDesktopNumber) {
-
+        currentDesktopNumber(KWindowSystem::currentDesktop()) {
+    currentScreenPrivate = QString();
     setUpSignals();
-    setUpGlobalKeyboardShortcuts();
 }
 
 void VirtualDesktopBar::requestDesktopInfoList() {
@@ -31,86 +24,6 @@ void VirtualDesktopBar::requestDesktopInfoList() {
 
 void VirtualDesktopBar::showDesktop(int number) {
     KWindowSystem::setCurrentDesktop(number);
-}
-
-void VirtualDesktopBar::removeDesktop(int number) {
-    auto reply = dbusInterface.call("removeDesktop", getDesktopInfo(number).id);
-
-    if (reply.type() == QDBusMessage::ErrorMessage) {
-        if (number == KWindowSystem::numberOfDesktops()) {
-            netRootInfo.setNumberOfDesktops(KWindowSystem::numberOfDesktops() - 1);
-        } else {
-            tryAddEmptyDesktopLock = true;
-            tryRemoveEmptyDesktopsLock = true;
-            tryRenameEmptyDesktopsLock = true;
-            sendDesktopInfoListLock = true;
-
-            QList<QString> desktopNameList;
-            QList<KWindowInfo> windowInfoList;
-            for (int i = number + 1; i <= KWindowSystem::numberOfDesktops(); i++) {
-                desktopNameList << KWindowSystem::desktopName(i);
-                windowInfoList.append(getWindowInfoList(i));
-            }
-
-            for (int i = number, j = 0; i <= KWindowSystem::numberOfDesktops() - 1; i++, j++) {
-                renameDesktop(i, desktopNameList[j]);
-            }
-
-            for (auto& windowInfo : windowInfoList) {
-                KWindowSystem::setOnDesktop(windowInfo.win(), windowInfo.desktop() - 1);
-            }
-
-            tryAddEmptyDesktopLock = false;
-            tryRemoveEmptyDesktopsLock = false;
-            tryRenameEmptyDesktopsLock = false;
-            sendDesktopInfoListLock = false;
-
-            netRootInfo.setNumberOfDesktops(KWindowSystem::numberOfDesktops() - 1);
-        }
-    }
-}
-
-void VirtualDesktopBar::renameDesktop(int number, QString name) {
-    auto reply = dbusInterface.call("setDesktopName", getDesktopInfo(number).id, name);
-
-    if (reply.type() == QDBusMessage::ErrorMessage) {
-        KWindowSystem::setDesktopName(number, name);
-    }
-}
-
-void VirtualDesktopBar::replaceDesktops(int number1, int number2) {
-    if (number1 == number2) {
-        return;
-    }
-    if (number1 < 1 || number1 > KWindowSystem::numberOfDesktops()) {
-        return;
-    }
-    if (number2 < 1 || number2 > KWindowSystem::numberOfDesktops()) {
-        return;
-    }
-
-    auto desktopInfo1 = getDesktopInfo(number1);
-    auto desktopInfo2 = getDesktopInfo(number2);
-
-    auto windowInfoList1 = getWindowInfoList(desktopInfo1.number);
-    auto windowInfoList2 = getWindowInfoList(desktopInfo2.number);
-
-    if (desktopInfo1.isCurrent) {
-        KWindowSystem::setCurrentDesktop(desktopInfo2.number);
-    } else if (desktopInfo2.isCurrent) {
-        KWindowSystem::setCurrentDesktop(desktopInfo1.number);
-    }
-
-    for (auto& windowInfo : windowInfoList2) {
-        KWindowSystem::setOnDesktop(windowInfo.win(), desktopInfo1.number);
-    }
-
-    for (auto& windowInfo : windowInfoList1) {
-        KWindowSystem::setOnDesktop(windowInfo.win(), desktopInfo2.number);
-    }
-
-    renameDesktop(desktopInfo1.number, desktopInfo2.name);
-    renameDesktop(desktopInfo2.number, desktopInfo1.name);
 }
 
 void VirtualDesktopBar::setUpSignals() {
@@ -125,9 +38,6 @@ void VirtualDesktopBar::setUpKWinSignals() {
     });
 
     QObject::connect(KWindowSystem::self(), &KWindowSystem::numberOfDesktopsChanged, this, [&] {
-        processChanges([&] { tryAddEmptyDesktop(); }, tryAddEmptyDesktopLock);
-        processChanges([&] { tryRemoveEmptyDesktops(); }, tryRemoveEmptyDesktopsLock);
-        processChanges([&] { tryRenameEmptyDesktops(); }, tryRenameEmptyDesktopsLock);
         processChanges([&] { sendDesktopInfoList(); }, sendDesktopInfoListLock);
     });
 
@@ -138,9 +48,6 @@ void VirtualDesktopBar::setUpKWinSignals() {
     QObject::connect(KWindowSystem::self(), static_cast<void (KWindowSystem::*)(WId, NET::Properties, NET::Properties2)>
                                             (&KWindowSystem::windowChanged), this, [&](WId, NET::Properties properties, NET::Properties2) {
         if (properties & NET::WMState) {
-            processChanges([&] { tryAddEmptyDesktop(); }, tryAddEmptyDesktopLock);
-            processChanges([&] { tryRemoveEmptyDesktops(); }, tryRemoveEmptyDesktopsLock);
-            processChanges([&] { tryRenameEmptyDesktops(); }, tryRenameEmptyDesktopsLock);
             processChanges([&] { sendDesktopInfoList(); }, sendDesktopInfoListLock);
         }
     });
@@ -150,41 +57,6 @@ void VirtualDesktopBar::setUpInternalSignals() {
     QObject::connect(this, &VirtualDesktopBar::cfg_MultipleScreensFilterOccupiedDesktopsChanged, this, [&] {
         sendDesktopInfoList();
     });
-}
-
-void VirtualDesktopBar::setUpGlobalKeyboardShortcuts() {
-    QString prefix = "Virtual Desktop Bar - ";
-    actionCollection = new KActionCollection(this, QStringLiteral("kwin"));
-
-    actionSwitchToRecentDesktop = actionCollection->addAction(QStringLiteral("switchToRecentDesktop"));
-    actionSwitchToRecentDesktop->setText(prefix + "Switch to Recent Desktop");
-    QObject::connect(actionSwitchToRecentDesktop, &QAction::triggered, this, [&] {
-        showDesktop(mostRecentDesktopNumber);
-    });
-    KGlobalAccel::setGlobalShortcut(actionSwitchToRecentDesktop, QKeySequence());
-
-    actionRenameCurrentDesktop = actionCollection->addAction(QStringLiteral("renameCurrentDesktop"));
-    actionRenameCurrentDesktop->setText(prefix + "Rename Current Desktop");
-    QObject::connect(actionRenameCurrentDesktop, &QAction::triggered, this, [&] {
-        emit requestRenameCurrentDesktop();
-    });
-    KGlobalAccel::setGlobalShortcut(actionRenameCurrentDesktop, QKeySequence());
-
-    actionMoveCurrentDesktopToLeft = actionCollection->addAction(QStringLiteral("moveCurrentDesktopToLeft"));
-    actionMoveCurrentDesktopToLeft->setText(prefix + "Move Current Desktop to Left");
-    QObject::connect(actionMoveCurrentDesktopToLeft, &QAction::triggered, this, [&] {
-        replaceDesktops(KWindowSystem::currentDesktop(),
-                        KWindowSystem::currentDesktop() - 1);
-    });
-    KGlobalAccel::setGlobalShortcut(actionMoveCurrentDesktopToLeft, QKeySequence());
-
-    actionMoveCurrentDesktopToRight = actionCollection->addAction(QStringLiteral("moveCurrentDesktopToRight"));
-    actionMoveCurrentDesktopToRight->setText(prefix + "Move Current Desktop to Right");
-    QObject::connect(actionMoveCurrentDesktopToRight, &QAction::triggered, this, [&] {
-        replaceDesktops(KWindowSystem::currentDesktop(),
-                        KWindowSystem::currentDesktop() + 1);
-    });
-    KGlobalAccel::setGlobalShortcut(actionMoveCurrentDesktopToRight, QKeySequence());
 }
 
 void VirtualDesktopBar::processChanges(std::function<void()> callback, bool& lock) {
@@ -197,25 +69,7 @@ void VirtualDesktopBar::processChanges(std::function<void()> callback, bool& loc
     }
 }
 
-DesktopInfo VirtualDesktopBar::getDesktopInfo(int number) {
-    for (auto& desktopInfo : getDesktopInfoList()) {
-        if (desktopInfo.number == number) {
-            return desktopInfo;
-        }
-    }
-    return DesktopInfo();
-}
-
-DesktopInfo VirtualDesktopBar::getDesktopInfo(QString id) {
-    for (auto& desktopInfo : getDesktopInfoList()) {
-        if (desktopInfo.id == id) {
-            return desktopInfo;
-        }
-    }
-    return DesktopInfo();
-}
-
-QList<DesktopInfo> VirtualDesktopBar::getDesktopInfoList(bool extraInfo) {
+QList<DesktopInfo> VirtualDesktopBar::getDesktopInfoList() {
     QList<DesktopInfo> desktopInfoList;
 
     // Getting info about desktops through the KWin's D-Bus service here
@@ -240,145 +94,27 @@ QList<DesktopInfo> VirtualDesktopBar::getDesktopInfoList(bool extraInfo) {
 
     for (auto& desktopInfo : desktopInfoList) {
         desktopInfo.isCurrent = desktopInfo.number == KWindowSystem::currentDesktop();
-
-        if (!extraInfo) {
-            continue;
-        }
-
-        auto windowInfoList = getWindowInfoList(desktopInfo.number);
-
-        desktopInfo.isEmpty = windowInfoList.isEmpty();
-
-        for (int i = 0; i < windowInfoList.length(); i++) {
-            auto& windowInfo = windowInfoList[i];
-
-            if (!desktopInfo.isUrgent) {
-                desktopInfo.isUrgent = windowInfo.hasState(NET::DemandsAttention);
-            }
-
-            QString windowName = windowInfo.name();
-            int separatorPosition = qMax(windowName.lastIndexOf(" - "),
-                                         qMax(windowName.lastIndexOf(" – "),
-                                              windowName.lastIndexOf(" — ")));
-            if (separatorPosition >= 0) {
-                separatorPosition += 3;
-                int length = windowName.length() - separatorPosition;
-                QStringRef substringRef(&windowName, separatorPosition, length);
-                windowName = substringRef.toString().trimmed();
-            }
-
-            if (i == 0) {
-                desktopInfo.activeWindowName = windowName;
-            }
-
-            desktopInfo.windowNameList << windowName;
-        }
     }
 
     return desktopInfoList;
 }
 
-QList<KWindowInfo> VirtualDesktopBar::getWindowInfoList(int desktopNumber, bool ignoreScreens) {
-    QList<KWindowInfo> windowInfoList;
-
-    auto screenRect = QGuiApplication::screens().at(0)->geometry();
-
-    QList<WId> windowIds = KWindowSystem::stackingOrder();
-    for (int i = windowIds.length() - 1; i >= 0; i--) {
-        KWindowInfo windowInfo(windowIds[i], NET::WMState |
-                                             NET::WMDesktop |
-                                             NET::WMGeometry |
-                                             NET::WMWindowType |
-                                             NET::WMName);
-
-        // Skipping windows not present on the current desktops
-        if (windowInfo.desktop() != desktopNumber &&
-            windowInfo.desktop() != -1) {
-            continue;
-        }
-
-        // Skipping some flagged windows
-        if (windowInfo.hasState(NET::SkipPager) ||
-            windowInfo.hasState(NET::SkipTaskbar)) {
-            continue;
-        }
-
-        auto windowType = windowInfo.windowType(NET::AllTypesMask);
-        if (windowType != -1 &&
-            ((windowType == NET::Dock) ||
-             (windowType == NET::Desktop))) {
-            continue;
-        }
-
-        // Skipping windows not present on the current screen
-        if (!ignoreScreens && cfg_MultipleScreensFilterOccupiedDesktops) {
-            auto windowRect = windowInfo.geometry();
-            auto intersectionRect = screenRect.intersected(windowRect);
-            if (intersectionRect.width() < windowRect.width() / 2 ||
-                intersectionRect.height() < windowRect.height() / 2) {
-                continue;
-            }
-        }
-
-        windowInfoList << windowInfo;
-    }
-
-    return windowInfoList;
-}
-
-QList<int> VirtualDesktopBar::getEmptyDesktopNumberList(bool noCheating) {
-    QList<int> emptyDesktopNumberList;
-
-    for (int i = 1; i <= KWindowSystem::numberOfDesktops(); i++) {
-        auto windowInfoList = getWindowInfoList(i, true);
-
-        if (noCheating) {
-            if (windowInfoList.empty()) {
-                emptyDesktopNumberList << i;
-            }
-            continue;
-        }
-
-        bool isConsideredEmpty = true;
-        for (auto& windowInfo : windowInfoList) {
-            if (windowInfo.desktop() == i) {
-                isConsideredEmpty = false;
-                break;
-            }
-        }
-
-        if (isConsideredEmpty) {
-            emptyDesktopNumberList << i;
-        }
-    }
-
-    return emptyDesktopNumberList;
-}
-
 void VirtualDesktopBar::sendDesktopInfoList() {
     QVariantList desktopInfoList;
-    for (auto& desktopInfo : getDesktopInfoList(true)) {
+    for (auto& desktopInfo : getDesktopInfoList()) {
         desktopInfoList << desktopInfo.toQVariantMap();
     }
     emit desktopInfoListSent(desktopInfoList);
 }
 
-void VirtualDesktopBar::tryAddEmptyDesktop() {
-    // TODO remove
-}
-
-void VirtualDesktopBar::tryRemoveEmptyDesktops() {
-    // TODO remove
-}
-
-void VirtualDesktopBar::tryRenameEmptyDesktops() {
-    // TODO remove
-}
-
 void VirtualDesktopBar::updateLocalDesktopNumbers() {
-    int n = KWindowSystem::currentDesktop();
-    if (currentDesktopNumber != n) {
-        mostRecentDesktopNumber = currentDesktopNumber;
-    }
-    currentDesktopNumber = n;
+    currentDesktopNumber = KWindowSystem::currentDesktop();
+}
+
+void VirtualDesktopBar::setCurrentScreen(QString screen) {
+    this->currentScreenPrivate = screen;
+}
+
+QString VirtualDesktopBar::getCurrentScreen() {
+    return this->currentScreenPrivate;
 }

@@ -43,9 +43,6 @@
     </entry>
 
     <!-- Appearance - Labels -->
-    <entry name="DesktopLabelsMaximumLength" type="Int">
-      <default>25</default>
-    </entry>
     <entry name="DesktopLabelsCustomFont" type="String">
       <default></default>
     </entry>

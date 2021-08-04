@@ -14,11 +14,6 @@ Component {
         property bool isCurrent: false
         property bool isEmpty: false
         property bool isUrgent: false
-        property string activeWindowName: ""
-        property var windowNameList: []
-
-        property bool isDragged: container.draggedDesktopButton == this
-        property bool ignoreMouseArea: container.isDragging
 
         property bool isVisible: {
             // TODO handle multimonitor here
@@ -46,7 +41,6 @@ Component {
         color: "transparent"
         opacity: 1
 
-        readonly property int tooltipWaitDuration: 800
         readonly property int animationWidthDuration: 100
         readonly property int animationColorDuration: 150
         readonly property int animationOpacityDuration: 150
@@ -109,7 +103,7 @@ Component {
                 if (isCurrent) {
                     return 1.0;
                 }
-                if ((!ignoreMouseArea && mouseArea.containsMouse) || isDragged) {
+                if (mouseArea.containsMouse) {
                     return config.DesktopIndicatorsStyle == 5 ? 1.0 : 0.75;
                 }
                 if (config.DesktopIndicatorsDoNotOverrideOpacityOfCustomColors) {
@@ -228,7 +222,7 @@ Component {
                     return 1.0;
                 }
                 if (config.DesktopLabelsDimForIdleDesktops) {
-                    if ((!ignoreMouseArea && mouseArea.containsMouse) || isDragged) {
+                    if (mouseArea.containsMouse) {
                         return 1.0;
                     }
                     return 0.75;
@@ -278,9 +272,6 @@ Component {
             label.text = Qt.binding(function() {
                 var labelText = name;
 
-                if (labelText.length > config.DesktopLabelsMaximumLength) {
-                    labelText = labelText.substr(0, config.DesktopLabelsMaximumLength - 1) + "…";
-                }
                 if (config.DesktopLabelsDisplayAsUppercased) {
                     labelText = labelText.toUpperCase();
                 }
@@ -296,8 +287,6 @@ Component {
             isCurrent = desktopInfo.isCurrent;
             isEmpty = desktopInfo.isEmpty;
             isUrgent = desktopInfo.isUrgent;
-            activeWindowName = desktopInfo.activeWindowName
-            windowNameList = desktopInfo.windowNameList;
 
             updateLabel();
         }

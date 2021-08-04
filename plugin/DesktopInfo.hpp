@@ -16,8 +16,6 @@ public:
     // Extra info
     bool isEmpty = true;
     bool isUrgent = false;
-    QString activeWindowName;
-    QList<QString> windowNameList;
 
     // "Serializing" method
     QVariantMap toQVariantMap();
