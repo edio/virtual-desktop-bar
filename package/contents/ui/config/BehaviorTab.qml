@@ -1,10 +1,11 @@
-import QtQuick 2.7
-import QtQuick.Controls 1.4
-import QtQuick.Layouts 1.3
+import QtQuick 2.11
+import QtQuick.Controls 2.11
+import org.kde.kirigami 2.9 as Kirigami
 
 import "../common" as UICommon
 
-Item {
+Kirigami.FormLayout {
+    id : page
 
     // Multiple screens/monitors
     property alias cfg_MultipleScreensFilterOccupiedDesktops: multipleScreensFilterOccupiedDesktopsCheckBox.checked
@@ -14,37 +15,27 @@ Item {
     property alias cfg_MouseWheelInvertDesktopSwitchingDirection: mouseWheelInvertDesktopSwitchingDirectionCheckBox.checked
     property alias cfg_MouseWheelWrapDesktopNavigationWhenScrolling: mouseWheelWrapDesktopNavigationWhenScrollingCheckBox.checked
 
-    GridLayout {
-        columns: 1
+    CheckBox {
+        Kirigami.FormData.label: i18n("Multiple outpus:")
+        id: multipleScreensFilterOccupiedDesktopsCheckBox
+        text: "NOT Show workspaces from all outputs"
+    }
 
-        SectionHeader {
-            text: "Multiple screens/monitors"
-        }
+    CheckBox {
+        Kirigami.FormData.label: i18n("Mouse wheel handling:")
+        id: mouseWheelSwitchDesktopOnScrollCheckBox
+        text: "Switch desktops by scrolling the wheel"
+    }
 
-        CheckBox {
-            id: multipleScreensFilterOccupiedDesktopsCheckBox
-            text: "Filter occupied desktops by screen/monitor"
-        }
+    CheckBox {
+        id: mouseWheelInvertDesktopSwitchingDirectionCheckBox
+        enabled: mouseWheelSwitchDesktopOnScrollCheckBox.checked
+        text: "Invert wheel scrolling desktop switching direction"
+    }
 
-        SectionHeader {
-            text: "Mouse wheel handling"
-        }
-
-        CheckBox {
-            id: mouseWheelSwitchDesktopOnScrollCheckBox
-            text: "Switch desktops by scrolling the wheel"
-        }
-
-        CheckBox {
-            id: mouseWheelInvertDesktopSwitchingDirectionCheckBox
-            enabled: mouseWheelSwitchDesktopOnScrollCheckBox.checked
-            text: "Invert wheel scrolling desktop switching direction"
-        }
-
-        CheckBox {
-            id: mouseWheelWrapDesktopNavigationWhenScrollingCheckBox
-            enabled: mouseWheelSwitchDesktopOnScrollCheckBox.checked
-            text: "Wrap desktop navigation after reaching first or last one"
-        }
+    CheckBox {
+        id: mouseWheelWrapDesktopNavigationWhenScrollingCheckBox
+        enabled: mouseWheelSwitchDesktopOnScrollCheckBox.checked
+        text: "Wrap desktop navigation after reaching first or last one"
     }
 }

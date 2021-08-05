@@ -1,14 +1,14 @@
-import QtQuick 2.7
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
-import QtQuick.Dialogs 1.0
-import QtQuick.Layouts 1.3
+import QtQuick 2.11
+import QtQuick.Controls 2.11
+import QtQuick.Layouts 1.12
+import org.kde.kirigami 2.9 as Kirigami
 
 import org.kde.plasma.core 2.0 as PlasmaCore
 
 import "../common" as UICommon
 
-Item {
+Kirigami.FormLayout {
+    id : page
 
     // Buttons
     property alias cfg_DesktopButtonsVerticalMargin: desktopButtonsVerticalMarginSpinBox.value
@@ -37,261 +37,18 @@ Item {
     // Other
     property alias cfg_AnimationsEnable: animationsEnableCheckBox.checked
 
-    GridLayout {
-        columns: 1
+    Kirigami.Separator {
+        Kirigami.FormData.label: i18n("Shape")
+        Kirigami.FormData.isSection: true
+    }
 
-        SectionHeader {
-            text: "Buttons"
-        }
-
-        RowLayout {
-            Label {
-                text: "Vertical margins:"
-            }
-
-            SpinBox {
-                id: desktopButtonsVerticalMarginSpinBox
-
-                enabled: plasmoid.formFactor == PlasmaCore.Types.Vertical ||
-                         (cfg_DesktopIndicatorsStyle != 0 &&
-                          cfg_DesktopIndicatorsStyle != 4 &&
-                          cfg_DesktopIndicatorsStyle != 5)
-
-                value: cfg_DesktopButtonsVerticalMargin
-                minimumValue: 0
-                maximumValue: 300
-                suffix: " px"
-            }
-
-            HintIcon {
-                visible: !desktopButtonsVerticalMarginSpinBox.enabled
-                tooltipText: "Not available for the selected indicator style"
-            }
-        }
+    ColumnLayout {
+        Kirigami.FormData.label: i18n("Style:")
+        Kirigami.FormData.buddyFor: desktopIndicatorsStyleComboBox
 
         RowLayout {
-            Label {
-                text: "Horizontal margins:"
-            }
-
-            SpinBox {
-                id: desktopButtonsHorizontalMarginSpinBox
-
-                enabled: plasmoid.formFactor != PlasmaCore.Types.Vertical ||
-                         (cfg_DesktopIndicatorsStyle != 1 &&
-                          cfg_DesktopIndicatorsStyle != 4 &&
-                          cfg_DesktopIndicatorsStyle != 5)
-
-                value: cfg_DesktopButtonsHorizontalMargin
-                minimumValue: 0
-                maximumValue: 300
-                suffix: " px"
-            }
-
-            HintIcon {
-                visible: !desktopButtonsHorizontalMarginSpinBox.enabled
-                tooltipText: "Not available for the selected indicator style"
-            }
-        }
-
-        RowLayout {
-            Label {
-                enabled: desktopButtonsSpacingSpinBox.enabled
-                text: "Spacing between buttons:"
-            }
-
-            SpinBox {
-                id: desktopButtonsSpacingSpinBox
-                value: cfg_DesktopButtonsSpacing
-                minimumValue: 0
-                maximumValue: 100
-                suffix: " px"
-            }
-
-            HintIcon {
-                visible: !desktopButtonsSpacingSpinBox.enabled
-                tooltipText: "Not available if only one button is shown"
-            }
-        }
-
-        RowLayout {
-            spacing: 0
-
-            CheckBox {
-                id: desktopButtonsSetCommonSizeForAllCheckBox
-                text: "Set common size for all buttons"
-            }
-
-            HintIcon {
-                tooltipText: "The size is based on the largest button"
-            }
-        }
-
-        SectionHeader {
-            text: "Labels"
-        }
-
-        RowLayout {
-            spacing: 0
-
-            CheckBox {
-                id: desktopLabelsCustomFontCheckBox
-                checked: cfg_DesktopLabelsCustomFont
-                onCheckedChanged: {
-                    if (checked) {
-                        var currentIndex = desktopLabelsCustomFontComboBox.currentIndex;
-                        var selectedFont = desktopLabelsCustomFontComboBox.model[currentIndex].value;
-                        cfg_DesktopLabelsCustomFont = selectedFont;
-                    } else {
-                        cfg_DesktopLabelsCustomFont = "";
-                    }
-                }
-                text: "Custom font:"
-            }
-
-            ComboBox {
-                id: desktopLabelsCustomFontComboBox
-                enabled: desktopLabelsCustomFontCheckBox.checked
-                implicitWidth: 130
-
-                Component.onCompleted: {
-                    var array = [];
-                    var fonts = Qt.fontFamilies()
-                    for (var i = 0; i < fonts.length; i++) {
-                        array.push({text: fonts[i], value: fonts[i]});
-                    }
-                    model = array;
-
-                    var foundIndex = find(cfg_DesktopLabelsCustomFont);
-                    if (foundIndex == -1) {
-                        foundIndex = find(theme.defaultFont.family);
-                    }
-                    if (foundIndex >= 0) {
-                        currentIndex = foundIndex;
-                    }
-                }
-
-                onCurrentIndexChanged: {
-                    if (enabled && currentIndex) {
-                        var selectedItem = model[currentIndex];
-                        if (selectedItem) {
-                            var selectedFont = selectedItem.value;
-                            cfg_DesktopLabelsCustomFont = selectedFont;
-                        }
-                    }
-                }
-            }
-        }
-
-        RowLayout {
-            spacing: 0
-
-            CheckBox {
-                id: desktopLabelsCustomFontSizeCheckBox
-                checked: cfg_DesktopLabelsCustomFontSize > 0
-                onCheckedChanged: cfg_DesktopLabelsCustomFontSize = checked ?
-                                  desktopLabelsCustomFontSizeSpinBox.value : 0
-                text: "Custom font size:"
-            }
-
-            SpinBox {
-                id: desktopLabelsCustomFontSizeSpinBox
-                enabled: desktopLabelsCustomFontSizeCheckBox.checked
-                value: cfg_DesktopLabelsCustomFontSize || theme.defaultFont.pixelSize
-                minimumValue: 5
-                maximumValue: 100
-                suffix: " px"
-                onValueChanged: {
-                    if (desktopLabelsCustomFontSizeCheckBox.checked) {
-                        cfg_DesktopLabelsCustomFontSize = value;
-                    }
-                }
-            }
-        }
-
-        RowLayout {
-            spacing: 0
-
-            CheckBox {
-                id: desktopLabelsCustomColorCheckBox
-                enabled: cfg_DesktopIndicatorsStyle != 5
-                checked: cfg_DesktopLabelsCustomColor
-                onCheckedChanged: cfg_DesktopLabelsCustomColor = checked ?
-                                  desktopLabelsCustomColorButton.color : ""
-                text: "Custom text color:"
-            }
-
-            ColorButton {
-                id: desktopLabelsCustomColorButton
-                enabled: desktopLabelsCustomColorCheckBox.enabled &&
-                         desktopLabelsCustomColorCheckBox.checked
-                color: cfg_DesktopLabelsCustomColor || theme.textColor
-
-                colorAcceptedCallback: function(color) {
-                    cfg_DesktopLabelsCustomColor = color;
-                }
-            }
-
-            Item {
-                width: 8
-            }
-
-            HintIcon {
-                visible: desktopLabelsCustomColorCheckBox.checked ||
-                         !desktopLabelsCustomColorCheckBox.enabled
-                tooltipText: cfg_DesktopIndicatorsStyle != 5 ?
-                             "Click the colored box to choose a different color" :
-                             "Not available if labels are used as indicators"
-            }
-        }
-
-        RowLayout {
-            spacing: 0
-
-            CheckBox {
-                id: desktopLabelsDimForIdleDesktopsCheckBox
-                enabled: cfg_DesktopIndicatorsStyle != 5
-                text: "Dim labels for idle desktops"
-            }
-
-            HintIcon {
-                visible: !desktopLabelsDimForIdleDesktopsCheckBox.enabled
-                tooltipText: "Not available if labels are used as indicators"
-            }
-        }
-
-        RowLayout {
-            spacing: 0
-
-            CheckBox {
-                id: desktopLabelsDisplayAsUppercasedCheckBox
-                enabled: true
-                text: "Display labels as UPPERCASED"
-            }
-
-            HintIcon {
-                visible: !desktopLabelsDisplayAsUppercasedCheckBox.enabled
-                tooltipText: "Not available for the selected label style"
-            }
-        }
-
-        CheckBox {
-            id: desktopLabelsBoldFontForCurrentDesktopCheckBox
-            text: "Set bold font for current desktop"
-        }
-
-        SectionHeader {
-            text: "Indicators"
-        }
-
-        RowLayout {
-            Label {
-                text: "Style:"
-            }
-
             ComboBox {
                 id: desktopIndicatorsStyleComboBox
-                implicitWidth: 100
                 model: [
                     "Edge line",
                     "Side line",
@@ -322,132 +79,309 @@ Item {
                 }
             }
 
-            SpinBox {
-                id: desktopIndicatorsStyleBlockRadiusSpinBox
-                visible: cfg_DesktopIndicatorsStyle == 2
-                value: cfg_DesktopIndicatorsStyleBlockRadius
-                minimumValue: 0
-                maximumValue: 300
-                suffix: " px corner radius"
-            }
-
-            SpinBox {
-                id: desktopIndicatorsStyleLineThicknessSpinBox
-                visible: cfg_DesktopIndicatorsStyle < 2
-                value: cfg_DesktopIndicatorsStyleLineThickness
-                minimumValue: 1
-                maximumValue: 10
-                suffix: " px thickness"
-            }
-        }
-
-        RowLayout {
-            spacing: 0
-
             CheckBox {
                 id: desktopIndicatorsInvertPositionCheckBox
-                enabled: cfg_DesktopIndicatorsStyle < 2
-                text: "Invert indicator's position"
+                visible: cfg_DesktopIndicatorsStyle < 2
+                text: "Reverse"
             }
-
-            HintIcon {
-                visible: !desktopIndicatorsInvertPositionCheckBox.enabled
-                tooltipText: "Not available for the selected indicator style"
-            }
-        }
-
-        RowLayout {
-            spacing: 0
-
-            CheckBox {
-                id: desktopIndicatorsCustomColorForCurrentDesktopCheckBox
-                checked: cfg_DesktopIndicatorsCustomColorForCurrentDesktop
-                onCheckedChanged: cfg_DesktopIndicatorsCustomColorForCurrentDesktop = checked ?
-                                  desktopIndicatorsCustomColorForCurrentDesktopButton.color : ""
-                text: "Custom color for focused workspaces:"
-            }
-
-            ColorButton {
-                id: desktopIndicatorsCustomColorForCurrentDesktopButton
-                enabled: desktopIndicatorsCustomColorForCurrentDesktopCheckBox.checked
-                color: cfg_DesktopIndicatorsCustomColorForCurrentDesktop || theme.buttonFocusColor
-
-                colorAcceptedCallback: function(color) {
-                    cfg_DesktopIndicatorsCustomColorForCurrentDesktop = color;
-                }
-            }
-        }
-
-        RowLayout {
-            spacing: 0
-
-            CheckBox {
-                id: desktopIndicatorsCustomColorForOccupiedIdleDesktopsCheckBox
-                checked: cfg_DesktopIndicatorsCustomColorForOccupiedIdleDesktops
-                onCheckedChanged: cfg_DesktopIndicatorsCustomColorForOccupiedIdleDesktops = checked ?
-                                  desktopIndicatorsCustomColorForOccupiedIdleDesktopsButton.color : ""
-                text: "Custom color for unfocused workspaces:"
-            }
-
-            ColorButton {
-                id: desktopIndicatorsCustomColorForOccupiedIdleDesktopsButton
-                enabled: desktopIndicatorsCustomColorForOccupiedIdleDesktopsCheckBox.checked
-                color: cfg_DesktopIndicatorsCustomColorForOccupiedIdleDesktops || theme.textColor
-
-                colorAcceptedCallback: function(color) {
-                    cfg_DesktopIndicatorsCustomColorForOccupiedIdleDesktops = color;
-                }
-            }
-        }
-
-        RowLayout {
-            spacing: 0
-
-            CheckBox {
-                id: desktopIndicatorsCustomColorForDesktopsNeedingAttentionCheckBox
-                checked: cfg_DesktopIndicatorsCustomColorForDesktopsNeedingAttention
-                onCheckedChanged: cfg_DesktopIndicatorsCustomColorForDesktopsNeedingAttention = checked ?
-                                  desktopIndicatorsCustomColorForDesktopsNeedingAttentionButton.color : ""
-                text: "Custom color for urgent workspaces:"
-            }
-
-            ColorButton {
-                id: desktopIndicatorsCustomColorForDesktopsNeedingAttentionButton
-                enabled: desktopIndicatorsCustomColorForDesktopsNeedingAttentionCheckBox.checked
-                color: cfg_DesktopIndicatorsCustomColorForDesktopsNeedingAttention || theme.textColor
-
-                colorAcceptedCallback: function(color) {
-                    cfg_DesktopIndicatorsCustomColorForDesktopsNeedingAttention = color;
-                }
-            }
-        }
-
-        RowLayout {
-            spacing: 0
-
-            CheckBox {
-                id: desktopIndicatorsDoNotOverrideOpacityOfCustomColorsCheckBox
-                enabled: desktopIndicatorsCustomColorForCurrentDesktopCheckBox.checked ||
-                         desktopIndicatorsCustomColorForOccupiedIdleDesktopsCheckBox.checked ||
-                         desktopIndicatorsCustomColorForDesktopsNeedingAttentionCheckBox.checked
-                text: "Do not override opacity of custom colors"
-            }
-
-            HintIcon {
-                tooltipText: !desktopIndicatorsDoNotOverrideOpacityOfCustomColorsCheckBox.enabled ?
-                             "Not available if custom colors are not used" :
-                             "Alpha channel of custom colors will be applied without any modifications"
-            }
-        }
-
-        SectionHeader {
-            text: "Other"
         }
 
         CheckBox {
-            id: animationsEnableCheckBox
-            text: "Enable animations"
+            id: desktopButtonsSetCommonSizeForAllCheckBox
+            text: i18n("Uniform buttons size")
+        }
+    }
+
+    GridLayout {
+        columns: 2
+        Kirigami.FormData.label: i18n("Adjustments:")
+        Kirigami.FormData.buddyFor: desktopButtonsSpacingSpinBox
+
+        Label {
+            text: i18n("Space between buttons:")
+        }
+        SpinBox {
+            id: desktopButtonsSpacingSpinBox
+            value: cfg_DesktopButtonsSpacing
+            from: 0
+            to: 100
+            textFromValue: function(value, locale) { return qsTr("%1 px").arg(value); }
+        }
+
+        Label {
+            text: i18n("Corner radius")
+        }
+        SpinBox {
+            id: desktopIndicatorsStyleBlockRadiusSpinBox
+            enabled: cfg_DesktopIndicatorsStyle == 2
+            value: cfg_DesktopIndicatorsStyleBlockRadius
+            from: 0
+            to: 300
+            textFromValue: function(value, locale) { return qsTr("%1 px").arg(value); }
+        }
+
+        Label {
+            text: i18n("Line thickness")
+        }
+        SpinBox {
+            id: desktopIndicatorsStyleLineThicknessSpinBox
+            enabled: cfg_DesktopIndicatorsStyle < 2
+            value: cfg_DesktopIndicatorsStyleLineThickness
+            from: 1
+            to: 10
+            textFromValue: function(value, locale) { return qsTr("%1 px").arg(value); }
+        }
+
+
+
+        Label {
+            text: i18n("Horizontal padding:")
+        }
+        SpinBox {
+            id: desktopButtonsHorizontalMarginSpinBox
+
+            enabled: plasmoid.formFactor != PlasmaCore.Types.Vertical ||
+                     (cfg_DesktopIndicatorsStyle != 1 &&
+                      cfg_DesktopIndicatorsStyle != 4 &&
+                      cfg_DesktopIndicatorsStyle != 5)
+
+            value: cfg_DesktopButtonsHorizontalMargin
+            from: 0
+            to: 300
+            textFromValue: function(value, locale) { return qsTr("%1 px").arg(value); }
+        }
+
+        Label {
+            text: i18n("Vertical padding:")
+        }
+        SpinBox {
+            id: desktopButtonsVerticalMarginSpinBox
+
+            enabled: plasmoid.formFactor == PlasmaCore.Types.Vertical ||
+                     (cfg_DesktopIndicatorsStyle != 0 &&
+                      cfg_DesktopIndicatorsStyle != 4 &&
+                      cfg_DesktopIndicatorsStyle != 5)
+
+            value: cfg_DesktopButtonsVerticalMargin
+            from: 0
+            to: 300
+            textFromValue: function(value, locale) { return qsTr("%1 px").arg(value); }
+        }
+    }
+
+    Kirigami.Separator {
+        Kirigami.FormData.label: i18n("Names")
+        Kirigami.FormData.isSection: true
+    }
+
+    GridLayout {
+        columns: 2
+        Kirigami.FormData.label: i18n("Override font:")
+        Kirigami.FormData.buddyFor: desktopLabelsCustomFontCheckBox
+
+        CheckBox {
+            id: desktopLabelsCustomFontCheckBox
+            checked: cfg_DesktopLabelsCustomFont
+            onCheckedChanged: {
+                if (checked) {
+                    var currentIndex = desktopLabelsCustomFontComboBox.currentIndex;
+                    var selectedFont = desktopLabelsCustomFontComboBox.model[currentIndex].value;
+                    cfg_DesktopLabelsCustomFont = selectedFont;
+                } else {
+                    cfg_DesktopLabelsCustomFont = "";
+                }
+            }
+            text: i18n("Family")
+        }
+
+        CheckBox {
+            id: desktopLabelsCustomFontSizeCheckBox
+            checked: cfg_DesktopLabelsCustomFontSize > 0
+            onCheckedChanged: cfg_DesktopLabelsCustomFontSize = checked ?
+                              desktopLabelsCustomFontSizeSpinBox.value : 0
+            text: i18n("Size")
+        }
+
+        ComboBox {
+            id: desktopLabelsCustomFontComboBox
+            enabled: desktopLabelsCustomFontCheckBox.checked
+
+            Component.onCompleted: {
+                model = Qt.fontFamilies()
+
+                var foundIndex = find(cfg_DesktopLabelsCustomFont);
+                if (foundIndex == -1) {
+                    foundIndex = find(theme.defaultFont.family);
+                }
+                if (foundIndex >= 0) {
+                    currentIndex = foundIndex;
+                }
+            }
+
+            onCurrentIndexChanged: {
+                if (enabled && currentIndex) {
+                    var selectedItem = model[currentIndex];
+                    if (selectedItem) {
+                        var selectedFont = selectedItem.value;
+                        cfg_DesktopLabelsCustomFont = selectedFont;
+                    }
+                }
+            }
+        }
+
+        SpinBox {
+            id: desktopLabelsCustomFontSizeSpinBox
+            enabled: desktopLabelsCustomFontSizeCheckBox.checked
+            value: cfg_DesktopLabelsCustomFontSize || theme.defaultFont.pixelSize
+            from: 5
+            to: 100
+            textFromValue: function(value, locale) { return qsTr("%1 px").arg(value); }
+            onValueChanged: {
+                if (desktopLabelsCustomFontSizeCheckBox.checked) {
+                    cfg_DesktopLabelsCustomFontSize = value;
+                }
+            }
+        }
+    }
+
+    ColumnLayout {
+        CheckBox {
+            id: desktopLabelsBoldFontForCurrentDesktopCheckBox
+            text: "Bold if focused"
+        }
+
+        CheckBox {
+            id: desktopLabelsDisplayAsUppercasedCheckBox
+            text: "UPPERCASED"
+        }
+
+
+
+    }
+
+
+    Kirigami.Separator {
+        Kirigami.FormData.label: i18n("Colors")
+        Kirigami.FormData.isSection: true
+    }
+
+    GridLayout {
+        columns: 2
+        Kirigami.FormData.label: i18n("Background:")
+        Kirigami.FormData.buddyFor: desktopIndicatorsCustomColorForCurrentDesktopCheckBox
+
+        CheckBox {
+            id: desktopIndicatorsCustomColorForCurrentDesktopCheckBox
+            checked: cfg_DesktopIndicatorsCustomColorForCurrentDesktop
+            onCheckedChanged: cfg_DesktopIndicatorsCustomColorForCurrentDesktop = checked ?
+                              desktopIndicatorsCustomColorForCurrentDesktopButton.color : ""
+            text: "Focused"
+        }
+
+        ColorButton {
+            id: desktopIndicatorsCustomColorForCurrentDesktopButton
+            enabled: desktopIndicatorsCustomColorForCurrentDesktopCheckBox.checked
+            color: cfg_DesktopIndicatorsCustomColorForCurrentDesktop || theme.buttonFocusColor
+
+            colorAcceptedCallback: function(color) {
+                cfg_DesktopIndicatorsCustomColorForCurrentDesktop = color;
+            }
+        }
+
+        CheckBox {
+            id: desktopIndicatorsCustomColorForOccupiedIdleDesktopsCheckBox
+            checked: cfg_DesktopIndicatorsCustomColorForOccupiedIdleDesktops
+            onCheckedChanged: cfg_DesktopIndicatorsCustomColorForOccupiedIdleDesktops = checked ?
+                              desktopIndicatorsCustomColorForOccupiedIdleDesktopsButton.color : ""
+            text: "Inactive"
+        }
+
+        ColorButton {
+            id: desktopIndicatorsCustomColorForOccupiedIdleDesktopsButton
+            enabled: desktopIndicatorsCustomColorForOccupiedIdleDesktopsCheckBox.checked
+            color: cfg_DesktopIndicatorsCustomColorForOccupiedIdleDesktops || theme.textColor
+
+            colorAcceptedCallback: function(color) {
+                cfg_DesktopIndicatorsCustomColorForOccupiedIdleDesktops = color;
+            }
+        }
+
+        CheckBox {
+            id: desktopIndicatorsCustomColorForDesktopsNeedingAttentionCheckBox
+            checked: cfg_DesktopIndicatorsCustomColorForDesktopsNeedingAttention
+            onCheckedChanged: cfg_DesktopIndicatorsCustomColorForDesktopsNeedingAttention = checked ?
+                              desktopIndicatorsCustomColorForDesktopsNeedingAttentionButton.color : ""
+            text: "Urgent"
+        }
+
+        ColorButton {
+            id: desktopIndicatorsCustomColorForDesktopsNeedingAttentionButton
+            enabled: desktopIndicatorsCustomColorForDesktopsNeedingAttentionCheckBox.checked
+            color: cfg_DesktopIndicatorsCustomColorForDesktopsNeedingAttention || theme.textColor
+
+            colorAcceptedCallback: function(color) {
+                cfg_DesktopIndicatorsCustomColorForDesktopsNeedingAttention = color;
+            }
+        }
+
+        CheckBox {
+            id: desktopIndicatorsDoNotOverrideOpacityOfCustomColorsCheckBox
+            enabled: desktopIndicatorsCustomColorForCurrentDesktopCheckBox.checked ||
+                     desktopIndicatorsCustomColorForOccupiedIdleDesktopsCheckBox.checked ||
+                     desktopIndicatorsCustomColorForDesktopsNeedingAttentionCheckBox.checked
+            text: "Do not dim"
+        }
+
+        Item {
+            width: 1
         }
 
     }
+
+    GridLayout {
+        columns: 2
+        Kirigami.FormData.label: i18n("Foreground:")
+        Kirigami.FormData.buddyFor: desktopLabelsCustomColorCheckBox
+        CheckBox {
+            id: desktopLabelsCustomColorCheckBox
+            enabled: cfg_DesktopIndicatorsStyle != 5
+            checked: cfg_DesktopLabelsCustomColor
+            onCheckedChanged: cfg_DesktopLabelsCustomColor = checked ?
+                              desktopLabelsCustomColorButton.color : ""
+            text: "All"
+        }
+
+        ColorButton {
+            id: desktopLabelsCustomColorButton
+            enabled: desktopLabelsCustomColorCheckBox.enabled &&
+                     desktopLabelsCustomColorCheckBox.checked
+            color: cfg_DesktopLabelsCustomColor || theme.textColor
+
+            colorAcceptedCallback: function(color) {
+                cfg_DesktopLabelsCustomColor = color;
+            }
+        }
+
+        CheckBox {
+            id: desktopLabelsDimForIdleDesktopsCheckBox
+            enabled: cfg_DesktopIndicatorsStyle != 5
+            text: "Dim if not focused"
+        }
+
+        Item {
+            width: 1
+        }
+    }
+
+    Kirigami.Separator {
+        Kirigami.FormData.label: i18n("Other")
+        Kirigami.FormData.isSection: true
+    }
+
+    CheckBox {
+        Kirigami.FormData.label: i18n("Animations:")
+        id: animationsEnableCheckBox
+        text: "Enable"
+    }
+
 }
