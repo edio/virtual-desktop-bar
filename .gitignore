@@ -1,1 +1,12 @@
 build
+.idea
+CMakeCache.txt
+CMakeFiles/
+CTestTestfile.cmake
+Makefile
+cmake-build-debug/
+cmake_install.cmake
+ecm_uninstall.cmake
+org.kde.plasma.virtualdesktopbar.appdata.xml
+prefix.sh
+regenerateindex.sh
