@@ -45,34 +45,6 @@ Component {
         readonly property int animationColorDuration: 150
         readonly property int animationOpacityDuration: 150
 
-        Behavior on opacity {
-            enabled: config.AnimationsEnable
-            animation: NumberAnimation {
-                duration: animationOpacityDuration
-            }
-        }
-
-        Behavior on implicitWidth {
-            id: widthBehavior
-            enabled: config.AnimationsEnable
-            animation: NumberAnimation {
-                duration: animationWidthDuration
-                onRunningChanged: {
-                    if (!running) {
-                        Utils.delay(100, container.updateLargestDesktopButton);
-                    }
-                }
-            }
-        }
-
-        Behavior on implicitHeight {
-            id: heightBehavior
-            enabled: config.AnimationsEnable
-            animation: NumberAnimation {
-                duration: animationWidthDuration
-            }
-        }
-
         /* Indicator */
         Rectangle {
             id: indicator
@@ -92,13 +64,6 @@ Component {
                 return theme.textColor;
             }
 
-            Behavior on color {
-                enabled: config.AnimationsEnable
-                animation: ColorAnimation {
-                    duration: animationColorDuration
-                }
-            }
-
             opacity: {
                 if (isCurrent) {
                     return 1.0;
@@ -114,13 +79,6 @@ Component {
                     }
                 }
                 return config.DesktopIndicatorsStyle == 5 ? 0.5 : 0.25;
-            }
-
-            Behavior on opacity {
-                enabled: config.AnimationsEnable
-                animation: NumberAnimation {
-                    duration: animationOpacityDuration
-                }
             }
 
             width: {
@@ -207,13 +165,6 @@ Component {
                    indicator.color :
                    config.DesktopLabelsCustomColor || theme.textColor
 
-            Behavior on color {
-                enabled: config.AnimationsEnable
-                animation: ColorAnimation {
-                    duration: animationColorDuration
-                }
-            }
-
             opacity: {
                 if (config.DesktopIndicatorsStyle == 5) {
                     return indicator.opacity;
@@ -228,13 +179,6 @@ Component {
                     return 0.75;
                 }
                 return 1.0;
-            }
-
-            Behavior on opacity {
-                enabled: config.AnimationsEnable
-                animation: NumberAnimation {
-                    duration: animationOpacityDuration
-                }
             }
 
             font.family: config.DesktopLabelsCustomFont || theme.defaultFont.family
@@ -331,17 +275,7 @@ Component {
                        2 * config.DesktopButtonsSpacing;
             });
 
-            if (config.AnimationsEnable) {
-                Utils.delay(animationWidthDuration, function() {
-                    opacity = 1;
-                });
-            } else {
-                opacity = 1;
-            }
-
-            widthBehavior.enabled = heightBehavior.enabled = Qt.binding(function() {
-                return config.AnimationsEnable;
-            });
+            opacity = 1;
         }
 
         function hide(callback, force) {
@@ -363,26 +297,14 @@ Component {
             var self = this;
             var postHideCallback = callback ? callback : function() {
                 self.visible = false;
-                widthBehavior.enabled = heightBehavior.enabled = Qt.binding(function() {
-                    return config.AnimationsEnable;
-                });
             };
 
-            if (config.AnimationsEnable && container.numberOfVisibleDesktopButtons > 1) {
-                Utils.delay(animationOpacityDuration, function() {
-                    resetDimensions();
-                    Utils.delay(animationWidthDuration, postHideCallback);
-                });
-            } else {
-                resetDimensions();
-                postHideCallback();
-            }
+            resetDimensions();
+            postHideCallback();
         }
 
         onImplicitWidthChanged: {
-            if (!config.AnimationsEnable) {
-                Utils.delay(100, container.updateLargestDesktopButton);
-            }
+            Utils.delay(100, container.updateLargestDesktopButton);
         }
     }
 }

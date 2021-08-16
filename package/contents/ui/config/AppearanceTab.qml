@@ -34,9 +34,6 @@ Kirigami.FormLayout {
     property string cfg_DesktopIndicatorsCustomColorForDesktopsNeedingAttention
     property alias cfg_DesktopIndicatorsDoNotOverrideOpacityOfCustomColors: desktopIndicatorsDoNotOverrideOpacityOfCustomColorsCheckBox.checked
 
-    // Other
-    property alias cfg_AnimationsEnable: animationsEnableCheckBox.checked
-
     Kirigami.Separator {
         Kirigami.FormData.label: i18n("Shape")
         Kirigami.FormData.isSection: true
@@ -185,7 +182,7 @@ Kirigami.FormLayout {
             onCheckedChanged: {
                 if (checked) {
                     var currentIndex = desktopLabelsCustomFontComboBox.currentIndex;
-                    var selectedFont = desktopLabelsCustomFontComboBox.model[currentIndex].value;
+                    var selectedFont = desktopLabelsCustomFontComboBox.model[currentIndex];
                     cfg_DesktopLabelsCustomFont = selectedFont;
                 } else {
                     cfg_DesktopLabelsCustomFont = "";
@@ -220,9 +217,8 @@ Kirigami.FormLayout {
 
             onCurrentIndexChanged: {
                 if (enabled && currentIndex) {
-                    var selectedItem = model[currentIndex];
-                    if (selectedItem) {
-                        var selectedFont = selectedItem.value;
+                    var selectedFont = model[currentIndex];
+                    if (selectedFont) {
                         cfg_DesktopLabelsCustomFont = selectedFont;
                     }
                 }
@@ -371,17 +367,6 @@ Kirigami.FormLayout {
         Item {
             width: 1
         }
-    }
-
-    Kirigami.Separator {
-        Kirigami.FormData.label: i18n("Other")
-        Kirigami.FormData.isSection: true
-    }
-
-    CheckBox {
-        Kirigami.FormData.label: i18n("Animations:")
-        id: animationsEnableCheckBox
-        text: "Enable"
     }
 
 }
