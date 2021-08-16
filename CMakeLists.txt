@@ -67,8 +67,6 @@ target_link_libraries(virtualdesktopbar
                       Qt5::Qml
                       Qt5::X11Extras
                       KF5::Plasma
-                      KF5::WindowSystem
-                      KF5::GlobalAccel
                       KF5::XmlGui)
 
 install(TARGETS virtualdesktopbar DESTINATION ${KDE_INSTALL_QMLDIR}/org/kde/plasma/virtualdesktopbar)
