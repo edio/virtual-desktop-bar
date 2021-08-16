@@ -2,8 +2,6 @@ import QtQuick 2.7
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
 
-import "../common/Utils.js" as Utils
-
 Component {
     Rectangle {
         readonly property string objectType: "DesktopButton"
@@ -40,10 +38,6 @@ Component {
         clip: true
         color: "transparent"
         opacity: 1
-
-        readonly property int animationWidthDuration: 100
-        readonly property int animationColorDuration: 150
-        readonly property int animationOpacityDuration: 150
 
         /* Indicator */
         Rectangle {
@@ -304,7 +298,7 @@ Component {
         }
 
         onImplicitWidthChanged: {
-            Utils.delay(100, container.updateLargestDesktopButton);
+            container.updateLargestDesktopButton();
         }
     }
 }

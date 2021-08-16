@@ -2,8 +2,6 @@ import QtQuick 2.11
 import QtQuick.Controls 2.11
 import org.kde.kirigami 2.9 as Kirigami
 
-import "../common" as UICommon
-
 Kirigami.FormLayout {
     id : page
 

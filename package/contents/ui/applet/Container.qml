@@ -2,8 +2,6 @@ import QtQuick 2.7
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
 
-import "../common/Utils.js" as Utils
-
 GridLayout {
     rowSpacing: 0
     columnSpacing: 0

@@ -6,8 +6,6 @@
 #include <QString>
 #include <QVariantList>
 
-#include <KWindowSystem>
-
 #include "DesktopInfo.hpp"
 
 class VirtualDesktopBar : public QObject {

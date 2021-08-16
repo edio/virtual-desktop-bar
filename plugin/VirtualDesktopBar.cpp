@@ -7,8 +7,6 @@
 #include <QScreen>
 #include <QTimer>
 
-#include <KGlobalAccel>
-
 VirtualDesktopBar::VirtualDesktopBar(QObject* parent) : QObject(parent),
         dbusInterface("org.kde.KWin", "/VirtualDesktopManager"),
         dbusInterfaceName("org.kde.KWin.VirtualDesktopManager"),
