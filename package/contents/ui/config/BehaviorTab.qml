@@ -1,5 +1,5 @@
-import QtQuick 2.11
-import QtQuick.Controls 2.11
+import QtQuick 2.13
+import QtQuick.Controls 2.13
 import org.kde.kirigami 2.9 as Kirigami
 
 Kirigami.FormLayout {

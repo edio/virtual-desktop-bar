@@ -1,10 +1,9 @@
 import QtQuick 2.13
-import QtQuick.Window 2.13
-
-import QtQuick.Layouts 1.3
-import QtQuick.Controls 1.3
+import QtQuick.Controls 1.6
+import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.3
-import QtQuick.Controls.Styles 1.3
+import QtQuick.Layouts 1.11
+import QtQuick.Window 2.13
 
 import org.kde.kquickcontrolsaddons 2.0
 import org.kde.plasma.core 2.0 as PlasmaCore
@@ -34,7 +33,9 @@ Item {
 
     Connections {
         target: backend
-        onDesktopInfoListSent: container.update(desktopInfoList)
+        function onDesktopInfoListSent(desktopInfoList) {
+            container.update(desktopInfoList)
+        }
     }
 
     Component.onCompleted: {
