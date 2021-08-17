@@ -48,9 +48,9 @@ find_package(Qt5 ${REQUIRED_QT_VERSION}
 
 find_package(KF5 ${KF5_MIN_VERSION}
              REQUIRED COMPONENTS
+             I18n
              Plasma
              WindowSystem
-             GlobalAccel
              XmlGui)
 
 plasma_install_package(package org.kde.plasma.virtualdesktopbar)

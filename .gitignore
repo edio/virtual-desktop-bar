@@ -1,5 +1,6 @@
 build
 .idea
+
 CMakeCache.txt
 CMakeFiles/
 CTestTestfile.cmake
@@ -10,3 +11,4 @@ ecm_uninstall.cmake
 org.kde.plasma.virtualdesktopbar.appdata.xml
 prefix.sh
 regenerateindex.sh
+
