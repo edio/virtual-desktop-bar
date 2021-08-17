@@ -43,7 +43,7 @@ Component {
         Rectangle {
             id: indicator
 
-            visible: config.DesktopIndicatorsStyle != 5
+            visible: config.DesktopIndicatorsStyle != 4
 
             color: {
                 if (isCurrent) {
@@ -63,7 +63,7 @@ Component {
                     return 1.0;
                 }
                 if (mouseArea.containsMouse) {
-                    return config.DesktopIndicatorsStyle == 5 ? 1.0 : 0.75;
+                    return config.DesktopIndicatorsStyle == 4 ? 1.0 : 0.75;
                 }
                 if (config.DesktopIndicatorsDoNotOverrideOpacityOfCustomColors) {
                     if ((isCurrent && config.DesktopIndicatorsCustomColorForCurrentDesktop) ||
@@ -72,7 +72,7 @@ Component {
                         return 1.0;
                     }
                 }
-                return config.DesktopIndicatorsStyle == 5 ? 0.5 : 0.25;
+                return config.DesktopIndicatorsStyle == 4 ? 0.5 : 0.25;
             }
 
             width: {
@@ -80,7 +80,7 @@ Component {
                     if (config.DesktopIndicatorsStyle == 1) {
                         return config.DesktopIndicatorsStyleLineThickness;
                     }
-                    if (config.DesktopIndicatorsStyle == 4) {
+                    if (config.DesktopIndicatorsStyle == 3) {
                         return parent.width;
                     }
                     if (config.DesktopButtonsSetCommonSizeForAll &&
@@ -98,7 +98,7 @@ Component {
             }
 
             height: {
-                if (config.DesktopIndicatorsStyle == 4) {
+                if (config.DesktopIndicatorsStyle == 3) {
                     if (isVerticalOrientation) {
                         return parent.height + 0.5 - 2 * config.DesktopButtonsSpacing;
                     }
@@ -139,9 +139,6 @@ Component {
                 if (config.DesktopIndicatorsStyle == 2) {
                     return config.DesktopIndicatorsStyleBlockRadius;
                 }
-                if (config.DesktopIndicatorsStyle == 3) {
-                    return 300;
-                }
                 return 0;
             }
         }
@@ -160,7 +157,7 @@ Component {
                    config.DesktopLabelsCustomColor || theme.textColor
 
             opacity: {
-                if (config.DesktopIndicatorsStyle == 5) {
+                if (config.DesktopIndicatorsStyle == 4) {
                     return indicator.opacity;
                 }
                 if (isCurrent) {

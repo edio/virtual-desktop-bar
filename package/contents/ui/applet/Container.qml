@@ -28,7 +28,7 @@ GridLayout {
 
     Text {
         text: screen
-        color: config.DesktopIndicatorsStyle == 5 ?
+        color: config.DesktopIndicatorsStyle == 4 ?
                indicator.color :
                config.DesktopLabelsCustomColor || theme.textColor
     }

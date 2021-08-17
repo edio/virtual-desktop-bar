@@ -48,7 +48,6 @@ Kirigami.FormLayout {
                     "Edge line",
                     "Side line",
                     "Block",
-                    "Rounded",
                     "Full size",
                     "Just labels"
                 ]
@@ -137,8 +136,8 @@ Kirigami.FormLayout {
 
             enabled: plasmoid.formFactor != PlasmaCore.Types.Vertical ||
                      (cfg_DesktopIndicatorsStyle != 1 &&
-                      cfg_DesktopIndicatorsStyle != 4 &&
-                      cfg_DesktopIndicatorsStyle != 5)
+                      cfg_DesktopIndicatorsStyle != 3 &&
+                      cfg_DesktopIndicatorsStyle != 4)
 
             value: cfg_DesktopButtonsHorizontalMargin
             from: 0
@@ -154,8 +153,8 @@ Kirigami.FormLayout {
 
             enabled: plasmoid.formFactor == PlasmaCore.Types.Vertical ||
                      (cfg_DesktopIndicatorsStyle != 0 &&
-                      cfg_DesktopIndicatorsStyle != 4 &&
-                      cfg_DesktopIndicatorsStyle != 5)
+                      cfg_DesktopIndicatorsStyle != 3 &&
+                      cfg_DesktopIndicatorsStyle != 4)
 
             value: cfg_DesktopButtonsVerticalMargin
             from: 0
@@ -338,7 +337,7 @@ Kirigami.FormLayout {
         Kirigami.FormData.buddyFor: desktopLabelsCustomColorCheckBox
         CheckBox {
             id: desktopLabelsCustomColorCheckBox
-            enabled: cfg_DesktopIndicatorsStyle != 5
+            enabled: cfg_DesktopIndicatorsStyle != 4
             checked: cfg_DesktopLabelsCustomColor
             onCheckedChanged: cfg_DesktopLabelsCustomColor = checked ?
                               desktopLabelsCustomColorButton.color : ""
@@ -358,7 +357,7 @@ Kirigami.FormLayout {
 
         CheckBox {
             id: desktopLabelsDimForIdleDesktopsCheckBox
-            enabled: cfg_DesktopIndicatorsStyle != 5
+            enabled: cfg_DesktopIndicatorsStyle != 4
             text: "Dim if not focused"
         }
 
