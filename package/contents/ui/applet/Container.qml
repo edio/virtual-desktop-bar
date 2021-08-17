@@ -89,7 +89,6 @@ GridLayout {
 
     function update(desktopInfoList) {
         var difference = desktopInfoList.length - desktopButtonList.length;
-        var synchronousUpdate = true;
 
         if (difference > 0) {
             addDesktopButtons(difference);
@@ -97,9 +96,7 @@ GridLayout {
             removeDesktopButtons(desktopInfoList);
         }
 
-        if (synchronousUpdate) {
-            updateDesktopButtons(desktopInfoList);
-        }
+        updateDesktopButtons(desktopInfoList);
 
         lastDesktopButton = desktopButtonList[desktopButtonList.length - 1];
     }
