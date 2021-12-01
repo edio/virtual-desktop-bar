@@ -1,5 +1,6 @@
-build
 .idea
+.direnv
+build
 
 CMakeCache.txt
 CMakeFiles/
@@ -8,7 +9,8 @@ Makefile
 cmake-build-debug/
 cmake_install.cmake
 ecm_uninstall.cmake
-org.kde.plasma.virtualdesktopbar.appdata.xml
+org.kde.plasma.quicki3.appdata.xml
 prefix.sh
 regenerateindex.sh
+result
 

@@ -6,6 +6,7 @@
 #include <QRegularExpression>
 #include <QScreen>
 #include <QTimer>
+#include <kwindowsystem.h>
 
 VirtualDesktopBar::VirtualDesktopBar(QObject* parent) : QObject(parent),
         dbusInterface("org.kde.KWin", "/VirtualDesktopManager"),

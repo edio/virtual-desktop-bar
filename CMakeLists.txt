@@ -53,7 +53,7 @@ find_package(KF5 ${KF5_MIN_VERSION}
              WindowSystem
              XmlGui)
 
-plasma_install_package(package org.kde.plasma.virtualdesktopbar)
+plasma_install_package(package org.kde.plasma.quicki3)
 
 set(virtualdesktopbar_SRCS
     plugin/DesktopInfo.cpp
@@ -61,15 +61,16 @@ set(virtualdesktopbar_SRCS
     plugin/VirtualDesktopBarPlugin.cpp
 )
 
-add_library(virtualdesktopbar SHARED ${virtualdesktopbar_SRCS})
+add_library(quicki3 SHARED ${virtualdesktopbar_SRCS})
 
-target_link_libraries(virtualdesktopbar
+target_link_libraries(quicki3
                       Qt5::Qml
                       Qt5::X11Extras
                       KF5::Plasma
-                      KF5::XmlGui)
+                      KF5::XmlGui
+                      KF5::WindowSystem)
 
-install(TARGETS virtualdesktopbar DESTINATION ${KDE_INSTALL_QMLDIR}/org/kde/plasma/virtualdesktopbar)
-install(FILES plugin/qmldir DESTINATION ${KDE_INSTALL_QMLDIR}/org/kde/plasma/virtualdesktopbar)
+install(TARGETS quicki3 DESTINATION ${KDE_INSTALL_QMLDIR}/org/kde/plasma/quicki3)
+install(FILES plugin/qmldir DESTINATION ${KDE_INSTALL_QMLDIR}/org/kde/plasma/quicki3)
 
 ecm_install_icons(ICONS icons/sc-apps-virtualdesktopbar.svg DESTINATION ${ICON_INSTALL_DIR})

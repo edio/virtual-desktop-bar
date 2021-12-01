@@ -1,2 +1,2 @@
-module org.kde.plasma.virtualdesktopbar
-plugin virtualdesktopbar
+module org.kde.plasma.quicki3
+plugin quicki3
