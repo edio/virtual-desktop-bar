@@ -38,6 +38,7 @@
         buildInputs = [
           plasma-applet-quicki3.buildInputs
           plasma-applet-quicki3.nativeBuildInputs
+          pkgs.libsForQt5.plasma-sdk
         ];
       };
     }
